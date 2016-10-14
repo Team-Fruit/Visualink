@@ -1,0 +1,25 @@
+{
+	"modListVersion": 2,
+	"modList": [
+		{
+			"modid": "tooltip",
+			"name": "Tooltip",
+			"description": "Tooltip!",
+			"mcversion": "${mcversion}",
+			"version": "${version}",
+			"authorList": [
+				"Kamesuta"
+			],
+			"credits": "2016 Kamesuta",
+			"dependants": [],
+			"dependencies": ["Forge@[${minforgeversion},)"],
+			"parent": "",
+			"requiredMods": ["Forge@[${minforgeversion},)"],
+			"logoFile": "",
+			"screenshots": [],
+			"updateUrl": "",
+			"url": "",
+			"useDependencyInformation": true
+		}
+	]
+}

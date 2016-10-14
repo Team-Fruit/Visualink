@@ -1,5 +1,7 @@
 package com.kamesuta.mc.tooltip;
 
+import static org.lwjgl.opengl.GL11.*;
+
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -15,18 +17,19 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 
-@Mod(modid = Tooltip.MODID, version = Tooltip.VERSION, name = "Tooltip")
+@Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
 public class Tooltip {
-	public static final String MODID = "Tooltip";
-	public static final String VERSION = "2.0";
 	public static boolean toggleXray = false;
 
 	public static int radius = 45;
@@ -88,9 +91,9 @@ public class Tooltip {
 	private void compileDL() {
 		GL11.glNewList(displayListid, 4864);
 
-		GL11.glDisable(3553);
-		GL11.glDisable(2929);
-		GL11.glEnable(3042);
+		GL11.glDisable(GL_TEXTURE_2D);
+		GL11.glDisable(GL_DEPTH_TEST);
+		GL11.glEnable(GL_BLEND);
 		GL11.glBlendFunc(770, 771);
 
 		GL11.glBegin(1);
@@ -122,9 +125,9 @@ public class Tooltip {
 			}
 		}
 		GL11.glEnd();
-		GL11.glEnable(2929);
-		GL11.glDisable(3042);
-		GL11.glEnable(3553);
+		GL11.glEnable(GL_DEPTH_TEST);
+		GL11.glDisable(GL_BLEND);
+		GL11.glEnable(GL_TEXTURE_2D);
 		GL11.glEndList();
 	}
 
@@ -201,5 +204,20 @@ public class Tooltip {
 		GL11.glTranslated(-doubleX, -doubleY, -doubleZ);
 		GL11.glCallList(displayListid);
 		GL11.glPopMatrix();
+	}
+
+	@SubscribeEvent
+	public void onDraw(final RenderGameOverlayEvent.Post event) {
+		if(event.type == ElementType.EXPERIENCE)
+			if (toggleXray) {
+				final FontRenderer font = this.mc.fontRenderer;
+
+				glPushMatrix();
+
+				final String str = "Xray";
+				font.drawStringWithShadow(str, this.mc.displayWidth/2 - font.getStringWidth(str), 0, 0xffffff);
+
+				glPopMatrix();
+			}
 	}
 }
