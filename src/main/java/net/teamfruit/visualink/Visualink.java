@@ -14,7 +14,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.MinecraftForge;
-import net.teamfruit.visualink.jabba.BarrelLinkNetwork;
+import net.teamfruit.visualink.addons.jabba.BarrelLinkNetwork;
 import net.teamfruit.visualink.network.VisualinkPacketHandler;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)

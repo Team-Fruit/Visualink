@@ -19,7 +19,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
-import net.teamfruit.visualink.jabba.Message0x00UpdateBarrelLinks;
+import net.teamfruit.visualink.addons.jabba.Message0x00UpdateBarrelLinks;
 
 public enum VisualinkPacketHandler {
 	INSTANCE;

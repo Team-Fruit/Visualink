@@ -28,12 +28,14 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.config.Configuration;
+import net.teamfruit.visualink.addons.IAccessor;
+import net.teamfruit.visualink.addons.IdentifierProvider;
 
 public class ClientHandler {
 	public static final ClientHandler instance = new ClientHandler();
 
 	public static int radius = 45;
-	public static boolean toggleXray = false;
+	public static boolean toggleVisualink = false;
 	public static int cooldownTicks = 0;
 
 	private ClientHandler() {
@@ -51,13 +53,13 @@ public class ClientHandler {
 		final Configuration cfg = new Configuration(file);
 		cfg.load();
 		radius = cfg.get("Visualink-Variables", "radius", 128, "Radius for Visualink").getInt();
-		toggleXray = cfg.get("Visualink-Variables", "toggleVisualink", false, "Visualink enabled on start-up?").getBoolean(false);
+		toggleVisualink = cfg.get("Visualink-Variables", "toggleVisualink", false, "Visualink enabled on start-up?").getBoolean(false);
 		cfg.save();
 	}
 
 	@SubscribeEvent
 	public boolean onTickInGame(final TickEvent.ClientTickEvent e) {
-		if (!toggleXray||this.mc.theWorld==null)
+		if (!toggleVisualink||this.mc.theWorld==null)
 			return true;
 		if (cooldownTicks<1) {
 			compileDL();
@@ -75,6 +77,7 @@ public class ClientHandler {
 		GL11.glEnable(GL_BLEND);
 		GL11.glBlendFunc(770, 771);
 
+		GL11.glLineWidth(.5f);
 		GL11.glBegin(GL_LINES);
 		final WorldClient world = this.mc.theWorld;
 
@@ -216,9 +219,9 @@ public class ClientHandler {
 	public void keyboardEvent(final InputEvent.KeyInputEvent key) {
 		if (!(this.mc.currentScreen instanceof GuiScreen))
 			if (this.toggleVisualinkBinding.isPressed()) {
-				toggleXray = !toggleXray;
+				toggleVisualink = !toggleVisualink;
 				//Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText("Link: "+(toggleXray ? "Visible" : "Hidden")), 1001419);
-				if (toggleXray)
+				if (toggleVisualink)
 					cooldownTicks = 0;
 				else
 					GL11.glDeleteLists(Visualink.displayListid, 1);
@@ -227,7 +230,7 @@ public class ClientHandler {
 
 	@SubscribeEvent
 	public void renderWorldLastEvent(final RenderWorldLastEvent evt) {
-		if (!toggleXray||this.mc.theWorld==null)
+		if (!toggleVisualink||this.mc.theWorld==null)
 			return;
 		final double doubleX = this.mc.thePlayer.lastTickPosX
 				+(this.mc.thePlayer.posX-this.mc.thePlayer.lastTickPosX)*evt.partialTicks;
@@ -247,12 +250,12 @@ public class ClientHandler {
 	@SubscribeEvent
 	public void onDraw(final RenderGameOverlayEvent.Post event) {
 		if (event.type==ElementType.EXPERIENCE)
-			if (toggleXray) {
+			if (toggleVisualink) {
 				final FontRenderer font = this.mc.fontRenderer;
 
 				glPushMatrix();
 
-				final String str = "Xray";
+				final String str = "Visualink";
 				font.drawStringWithShadow(str, this.mc.displayWidth/2-font.getStringWidth(str), 0, 0xffffff);
 
 				glPopMatrix();

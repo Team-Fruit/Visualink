@@ -1,4 +1,4 @@
-package net.teamfruit.visualink;
+package net.teamfruit.visualink.addons;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 import org.apache.logging.log4j.Level;
 
 import net.minecraft.tileentity.TileEntity;
+import net.teamfruit.visualink.Reference;
+import net.teamfruit.visualink.VisualinkBlocks;
 
 public class EnderStorageModule {
 	public static Class<?> TileFrequencyOwner = null;

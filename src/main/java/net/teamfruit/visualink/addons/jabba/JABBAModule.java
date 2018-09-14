@@ -1,4 +1,4 @@
-package net.teamfruit.visualink.jabba;
+package net.teamfruit.visualink.addons.jabba;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -12,10 +12,10 @@ import org.apache.logging.log4j.Level;
 
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import net.minecraft.tileentity.TileEntity;
-import net.teamfruit.visualink.IAccessor;
-import net.teamfruit.visualink.IdentifierProvider;
 import net.teamfruit.visualink.Reference;
 import net.teamfruit.visualink.VisualinkBlocks;
+import net.teamfruit.visualink.addons.IAccessor;
+import net.teamfruit.visualink.addons.IdentifierProvider;
 
 public class JABBAModule {
 	public static Class<?> TileEntityBarrel = null;

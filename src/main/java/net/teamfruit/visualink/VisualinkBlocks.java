@@ -5,7 +5,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import net.teamfruit.visualink.jabba.JABBAModule;
+import net.teamfruit.visualink.addons.EnderStorageModule;
+import net.teamfruit.visualink.addons.IdentifierProvider;
+import net.teamfruit.visualink.addons.jabba.JABBAModule;
 
 public class VisualinkBlocks {
 	public static List<VisualinkBlocks> blocks = new ArrayList<VisualinkBlocks>();

@@ -1,4 +1,4 @@
-package net.teamfruit.visualink.jabba;
+package net.teamfruit.visualink.addons.jabba;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

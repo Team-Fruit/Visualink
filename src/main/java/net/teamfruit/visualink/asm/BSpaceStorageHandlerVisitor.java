@@ -21,9 +21,9 @@ public class BSpaceStorageHandlerVisitor extends ClassVisitor {
 		@Override
 		public void visitCode() {
 			/*
-			    0  invokestatic net.teamfruit.visualink.jabba.BSpaceStorageHandlerHook() : void [21]
+			    0  invokestatic net.teamfruit.visualink.addons.jabba.BSpaceStorageHandlerHook() : void [21]
 			 */
-			visitMethodInsn(Opcodes.INVOKESTATIC, "net/teamfruit/visualink/jabba/BSpaceStorageHandlerHook", "writeToNBT",
+			visitMethodInsn(Opcodes.INVOKESTATIC, "net/teamfruit/visualink/addons/jabba/BSpaceStorageHandlerHook", "writeToNBT",
 					DescHelper.toDescMethod(void.class), false);
 			super.visitCode();
 		}
