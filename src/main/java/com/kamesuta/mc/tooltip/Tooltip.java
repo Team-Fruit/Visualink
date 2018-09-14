@@ -2,7 +2,13 @@ package com.kamesuta.mc.tooltip;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.Collection;
+import java.util.Map.Entry;
+
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -22,6 +28,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -88,19 +95,20 @@ public class Tooltip {
 	}
 
 	private void compileDL() {
-		GL11.glNewList(displayListid, 4864);
+		GL11.glNewList(displayListid, GL11.GL_COMPILE);
 
 		GL11.glDisable(GL_TEXTURE_2D);
 		GL11.glDisable(GL_DEPTH_TEST);
 		GL11.glEnable(GL_BLEND);
 		GL11.glBlendFunc(770, 771);
 
-		GL11.glBegin(1);
+		GL11.glBegin(GL_LINES);
 		final WorldClient world = this.mc.theWorld;
 
 		final EntityClientPlayerMP player = this.mc.thePlayer;
 		if (world==null||player==null)
 			return;
+		final Multimap<String, BlockPos> map = ArrayListMultimap.create();
 		for (int i = (int) player.posX-radius; i<=(int) player.posX+radius; ++i)
 			for (int j = (int) player.posZ-radius; j<=(int) player.posZ+radius; ++j) {
 				int k = 0;
@@ -111,19 +119,75 @@ public class Tooltip {
 						continue;
 					if (bId!=Blocks.stone)
 						for (final TooltipBlocks block : TooltipBlocks.blocks) {
-							if (block.enabled)
-								;
 							final Block blocki = (Block) Block.blockRegistry.getObject(block.id);
 							if (
 								blocki==bId
-										&&(block.meta==-1||block.meta==world.getBlockMetadata(i, k, j))
 							) {
-								renderBlock(i, k, j, block);
+								final BlockPos pos = new BlockPos(i, k, j);
+								final IdentifierProvider provider = block.provider;
+								final String id = provider==null ? block.id : provider.provide(new IAccessor() {
+									@Override
+									public TileEntity getTileEntity() {
+										if (blocki.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
+											return world.getTileEntity(pos.x, pos.y, pos.z);
+										return null;
+									}
+
+									@Override
+									public BlockPos getPosition() {
+										return pos;
+									}
+
+									@Override
+									public int getMetadata() {
+										return world.getBlockMetadata(pos.x, pos.y, pos.z);
+									}
+
+									@Override
+									public String getBlockID() {
+										return block.id;
+									}
+
+									@Override
+									public Block getBlock() {
+										return blocki;
+									}
+								});
+								renderBlock(pos, block);
+								map.put(id, pos);
 								break;
 							}
 						}
 				}
 			}
+		for (final Entry<String, Collection<BlockPos>> entry : map.asMap().entrySet()) {
+			//Block block = entry.getKey();
+			final Collection<BlockPos> poses = entry.getValue();
+
+			int count = 0, x = 0, y = 0, z = 0;
+			for (final BlockPos pos : poses)
+				if (count++<=0) {
+					x = pos.x;
+					y = pos.y;
+					z = pos.z;
+				} else {
+					x += pos.x;
+					y += pos.y;
+					z += pos.z;
+				}
+
+			if (count<=0)
+				continue;
+
+			x /= count;
+			y /= count;
+			z /= count;
+
+			for (final BlockPos pos : poses) {
+				glVertex3f(x+.5f, y+.5f, z+.5f);
+				glVertex3f(pos.x+.5f, pos.y+.5f, pos.z+.5f);
+			}
+		}
 		GL11.glEnd();
 		GL11.glEnable(GL_DEPTH_TEST);
 		GL11.glDisable(GL_BLEND);
@@ -131,8 +195,12 @@ public class Tooltip {
 		GL11.glEndList();
 	}
 
-	private void renderBlock(final int x, final int y, final int z, final TooltipBlocks block) {
-		GL11.glColor4ub((byte) block.r, (byte) block.g, (byte) block.b, (byte) block.a);
+	private void renderBlock(final BlockPos pos, final TooltipBlocks block) {
+		final int x = pos.x;
+		final int y = pos.y;
+		final int z = pos.z;
+
+		GL11.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
 
 		GL11.glVertex3f(x, y, z);
 		GL11.glVertex3f(x+1, y, z);
@@ -176,6 +244,7 @@ public class Tooltip {
 		if (!(this.mc.currentScreen instanceof GuiScreen))
 			if (this.toggleXrayBinding.isPressed()) {
 				toggleXray = !toggleXray;
+				//Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText("Link: "+(toggleXray ? "Visible" : "Hidden")), 1001419);
 				if (toggleXray)
 					cooldownTicks = 0;
 				else
