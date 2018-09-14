@@ -130,7 +130,8 @@ public class ClientHandler {
 									}
 								});
 								renderBlock(pos, block);
-								map.put(id, pos);
+								if (id!=null)
+									map.put(id, pos);
 								break;
 							}
 						}
@@ -140,7 +141,8 @@ public class ClientHandler {
 			//Block block = entry.getKey();
 			final Collection<BlockPos> poses = entry.getValue();
 
-			int count = 0, x = 0, y = 0, z = 0;
+			int count = 0;
+			float x = 0, y = 0, z = 0;
 			for (final BlockPos pos : poses)
 				if (count++<=0) {
 					x = pos.x;

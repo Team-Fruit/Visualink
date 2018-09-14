@@ -1,7 +1,6 @@
 package net.teamfruit.visualink.addons.jabba;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.Level;
 
-import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import net.minecraft.tileentity.TileEntity;
 import net.teamfruit.visualink.Reference;
 import net.teamfruit.visualink.VisualinkBlocks;
@@ -48,23 +46,20 @@ public class JABBAModule {
 			@Override
 			public @Nullable String provide(final @Nonnull IAccessor accessor) {
 				try {
-					try {
-						final Field field = BSpaceStorageHandler.class.getDeclaredField("links");
-						field.setAccessible(true);
-						@SuppressWarnings("unchecked")
-						final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(BSpaceStorageHandler.instance());
-						Reference.logger.info("server: "+links);
-					} catch (final Exception e) {
-						e.printStackTrace();
-					}
 					final TileEntity tile = accessor.getTileEntity();
 					if (tile==null)
 						return null;
 					final int e = TileEntityBarrel_Id.getInt(tile);
-					return accessor.getBlockID()+"@"+e;
+					final HashSet<Integer> links = BarrelLink.instance.links.get(e);
+					if (links!=null) {
+						int g = e;
+						for (final int link : links)
+							g = Math.min(g, link);
+						return accessor.getBlockID()+"@"+g;
+					}
 				} catch (final Exception arg8) {
-					return null;
 				}
+				return null;
 			}
 		}));
 	}
