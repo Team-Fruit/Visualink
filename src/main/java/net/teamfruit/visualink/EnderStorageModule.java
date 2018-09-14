@@ -15,7 +15,7 @@ public class EnderStorageModule {
 	public static Field TileFrequencyOwner_Freq = null;
 	public static Class<?> TileEnderTank = null;
 
-	public static void register(final List<TooltipBlocks> blocks) {
+	public static void register(final List<VisualinkBlocks> blocks) {
 		try {
 			Class.forName("codechicken.enderstorage.EnderStorage");
 			Reference.logger.log(Level.INFO, "EnderStorage mod found.");
@@ -40,7 +40,7 @@ public class EnderStorageModule {
 			return;
 		}
 
-		blocks.add(new TooltipBlocks("EnderStorage:enderChest", new IdentifierProvider() {
+		blocks.add(new VisualinkBlocks("EnderStorage:enderChest", new IdentifierProvider() {
 			@Override
 			public @Nullable String provide(final @Nonnull IAccessor accessor) {
 				try {

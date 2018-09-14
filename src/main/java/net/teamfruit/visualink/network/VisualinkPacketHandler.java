@@ -16,8 +16,6 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTSizeTracker;
 import net.minecraft.nbt.NBTTagCompound;
@@ -46,7 +44,7 @@ public enum VisualinkPacketHandler {
 	}
 
 	private VisualinkPacketHandler() {
-		this.channels = NetworkRegistry.INSTANCE.newChannel("JABBA", new ChannelHandler[] { new VisualinkCodec() });
+		this.channels = NetworkRegistry.INSTANCE.newChannel("Visualink", new ChannelHandler[] { new VisualinkCodec() });
 		if (FMLCommonHandler.instance().getSide()==Side.CLIENT)
 			addClientHandlers();
 
@@ -104,36 +102,5 @@ public enum VisualinkPacketHandler {
 			dat.readBytes(abyte);
 			return CompressedStreamTools.func_152457_a(abyte, NBTSizeTracker.field_152451_a);
 		}
-	}
-
-	public void writeItemStackToBuffer(final ByteBuf target, final ItemStack stack) throws IOException {
-		if (stack==null)
-			target.writeShort(-1);
-
-		else {
-			target.writeShort(Item.getIdFromItem(stack.getItem()));
-			target.writeByte(stack.stackSize);
-			target.writeShort(stack.getItemDamage());
-			NBTTagCompound nbttagcompound = null;
-
-			if (stack.getItem().isDamageable()||stack.getItem().getShareTag())
-				nbttagcompound = stack.stackTagCompound;
-
-			writeNBTTagCompoundToBuffer(target, nbttagcompound);
-		}
-	}
-
-	public ItemStack readItemStackFromBuffer(final ByteBuf dat) throws IOException {
-		ItemStack itemstack = null;
-		final short short1 = dat.readShort();
-
-		if (short1>=0) {
-			final byte b0 = dat.readByte();
-			final short short2 = dat.readShort();
-			itemstack = new ItemStack(Item.getItemById(short1), b0, short2);
-			itemstack.stackTagCompound = readNBTTagCompoundFromBuffer(dat);
-		}
-
-		return itemstack;
 	}
 }

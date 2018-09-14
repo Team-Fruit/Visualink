@@ -6,15 +6,22 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.google.common.collect.Maps;
-
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import net.minecraft.nbt.NBTTagCompound;
+import net.teamfruit.visualink.Reference;
 
-public class BarrelLinkManager {
-	public static final BarrelLinkManager instance = new BarrelLinkManager();
+public class BarrelLink {
+	public static final BarrelLink instance = new BarrelLink();
 
-	public HashMap<Integer, HashSet<Integer>> links = Maps.newHashMap();
+	public final HashMap<Integer, HashSet<Integer>> links;
+
+	public BarrelLink(final HashMap<Integer, HashSet<Integer>> links) {
+		this.links = links;
+	}
+
+	public BarrelLink() {
+		this(new HashMap<Integer, HashSet<Integer>>());
+	}
 
 	public void readFromNBT(final NBTTagCompound nbt) {
 		try {
@@ -61,5 +68,18 @@ public class BarrelLinkManager {
 		for (int i = 0; i<list.length; ++i)
 			ret.add(Integer.valueOf(list[i]));
 		return ret;
+	}
+
+	public static BarrelLink getLinks() {
+		try {
+			final Field field = BSpaceStorageHandler.class.getDeclaredField("links");
+			field.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(BSpaceStorageHandler.instance());
+			return new BarrelLink(links);
+		} catch (final Exception e) {
+			Reference.logger.error("Failed to get barrel links: ", e);
+		}
+		return new BarrelLink();
 	}
 }

@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import mcp.mobius.betterbarrels.network.BarrelPacketHandler;
 import net.minecraft.nbt.NBTTagCompound;
+import net.teamfruit.visualink.Reference;
 import net.teamfruit.visualink.network.IVisualinkMessage;
 
 public class Message0x00UpdateBarrelLinks extends SimpleChannelInboundHandler<Message0x00UpdateBarrelLinks> implements IVisualinkMessage {
@@ -13,7 +14,7 @@ public class Message0x00UpdateBarrelLinks extends SimpleChannelInboundHandler<Me
 	public Message0x00UpdateBarrelLinks() {
 	}
 
-	public Message0x00UpdateBarrelLinks(final BarrelLinkManager barrel) {
+	public Message0x00UpdateBarrelLinks(final BarrelLink barrel) {
 		barrel.writeToNBT(this.fullLinksTag);
 	}
 
@@ -34,7 +35,8 @@ public class Message0x00UpdateBarrelLinks extends SimpleChannelInboundHandler<Me
 
 	@Override
 	protected void channelRead0(final ChannelHandlerContext ctx, final Message0x00UpdateBarrelLinks msg) throws Exception {
-		final BarrelLinkManager manager = BarrelLinkManager.instance;
+		Reference.logger.info("Received server barrel links msg.");
+		final BarrelLink manager = BarrelLink.instance;
 		if (manager!=null)
 			manager.readFromNBT(msg.fullLinksTag);
 	}

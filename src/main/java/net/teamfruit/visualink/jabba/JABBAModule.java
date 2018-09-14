@@ -15,13 +15,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.teamfruit.visualink.IAccessor;
 import net.teamfruit.visualink.IdentifierProvider;
 import net.teamfruit.visualink.Reference;
-import net.teamfruit.visualink.TooltipBlocks;
+import net.teamfruit.visualink.VisualinkBlocks;
 
 public class JABBAModule {
 	public static Class<?> TileEntityBarrel = null;
 	public static Field TileEntityBarrel_Id = null;
 
-	public static void register(final List<TooltipBlocks> blocks) {
+	public static void register(final List<VisualinkBlocks> blocks) {
 		try {
 			Class.forName("mcp.mobius.betterbarrels.BetterBarrels");
 			Reference.logger.log(Level.INFO, "JABBA mod found.");
@@ -44,7 +44,7 @@ public class JABBAModule {
 			return;
 		}
 
-		blocks.add(new TooltipBlocks("JABBA:barrel", new IdentifierProvider() {
+		blocks.add(new VisualinkBlocks("JABBA:barrel", new IdentifierProvider() {
 			@Override
 			public @Nullable String provide(final @Nonnull IAccessor accessor) {
 				try {

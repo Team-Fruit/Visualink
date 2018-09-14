@@ -7,15 +7,15 @@ import javax.annotation.Nullable;
 
 import net.teamfruit.visualink.jabba.JABBAModule;
 
-public class TooltipBlocks {
-	public static List<TooltipBlocks> blocks = new ArrayList<TooltipBlocks>();
+public class VisualinkBlocks {
+	public static List<VisualinkBlocks> blocks = new ArrayList<VisualinkBlocks>();
 	public String id = "";
 	public @Nullable IdentifierProvider provider;
 
-	public TooltipBlocks() {
+	public VisualinkBlocks() {
 	}
 
-	public TooltipBlocks(final String id, @Nullable final IdentifierProvider provider) {
+	public VisualinkBlocks(final String id, @Nullable final IdentifierProvider provider) {
 		this.id = id;
 		this.provider = provider;
 	}

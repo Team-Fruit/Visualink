@@ -3,7 +3,10 @@ package net.teamfruit.visualink;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.annotation.Nonnull;
 
 import org.lwjgl.opengl.GL11;
 
@@ -19,6 +22,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -34,11 +38,11 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.teamfruit.visualink.network.NetworkHandler;
+import net.teamfruit.visualink.jabba.BarrelLinkNetwork;
 import net.teamfruit.visualink.network.VisualinkPacketHandler;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
-public class Tooltip {
+public class Visualink {
 	public static boolean toggleXray = false;
 
 	public static int radius = 45;
@@ -50,6 +54,8 @@ public class Tooltip {
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
+		VisualinkPacketHandler.INSTANCE.ordinal();
+
 		if (event.getSide()==Side.SERVER)
 			return;
 		final Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
@@ -63,22 +69,21 @@ public class Tooltip {
 
 		ClientRegistry.registerKeyBinding(this.toggleXrayBinding);
 		ClientRegistry.registerKeyBinding(this.toggleXrayGui);
-
-		VisualinkPacketHandler.INSTANCE.ordinal();
 	}
 
 	@Mod.EventHandler
 	public void init(final FMLInitializationEvent event) {
+		FMLCommonHandler.instance().bus().register(new BarrelLinkNetwork());
+
 		if (event.getSide()==Side.SERVER)
 			return;
 		this.mc = Minecraft.getMinecraft();
 
 		FMLCommonHandler.instance().bus().register(this);
-		FMLCommonHandler.instance().bus().register(new NetworkHandler());
 
 		MinecraftForge.EVENT_BUS.register(this);
 
-		TooltipBlocks.init();
+		VisualinkBlocks.init();
 	}
 
 	@Mod.EventHandler
@@ -97,6 +102,11 @@ public class Tooltip {
 			cooldownTicks = 80;
 		}
 		cooldownTicks -= 1;
+		return true;
+	}
+
+	@NetworkCheckHandler
+	public boolean checkModList(final @Nonnull Map<String, String> versions, final @Nonnull Side side) {
 		return true;
 	}
 
@@ -124,7 +134,7 @@ public class Tooltip {
 					if (bId==Blocks.air)
 						continue;
 					if (bId!=Blocks.stone)
-						for (final TooltipBlocks block : TooltipBlocks.blocks) {
+						for (final VisualinkBlocks block : VisualinkBlocks.blocks) {
 							final Block blocki = (Block) Block.blockRegistry.getObject(block.id);
 							if (
 								blocki==bId
@@ -201,7 +211,7 @@ public class Tooltip {
 		GL11.glEndList();
 	}
 
-	private void renderBlock(final BlockPos pos, final TooltipBlocks block) {
+	private void renderBlock(final BlockPos pos, final VisualinkBlocks block) {
 		final int x = pos.x;
 		final int y = pos.y;
 		final int z = pos.z;
