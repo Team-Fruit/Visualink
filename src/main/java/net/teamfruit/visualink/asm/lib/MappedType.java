@@ -6,7 +6,7 @@
  * Code released under the MIT license
  * https://github.com/OpenMods/OpenModsLib/blob/master/LICENSE
  */
-package com.kamesuta.mc.tooltip.asm.lib;
+package net.teamfruit.visualink.asm.lib;
 
 import javax.annotation.Nonnull;
 

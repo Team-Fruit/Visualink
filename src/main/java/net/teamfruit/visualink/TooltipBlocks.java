@@ -1,9 +1,11 @@
-package com.kamesuta.mc.tooltip;
+package net.teamfruit.visualink;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nullable;
+
+import net.teamfruit.visualink.jabba.JABBAModule;
 
 public class TooltipBlocks {
 	public static List<TooltipBlocks> blocks = new ArrayList<TooltipBlocks>();

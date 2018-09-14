@@ -1,4 +1,4 @@
-package com.kamesuta.mc.tooltip.asm.lib;
+package net.teamfruit.visualink.asm.lib;
 
 import javax.annotation.Nonnull;
 
@@ -14,7 +14,7 @@ public class DescHelper {
 	 @throws IllegalArgumentException 引数に{@link String}型か、{@link Class}型以外が入ったら投げられる。
 	 @return Javaバイトコードで扱われる形の文字列に変換されたDescriptor。
 	 */
-	public static @Nonnull String toDesc(final @Nonnull Object returnType, final @Nonnull Object... rawDesc) {
+	public static @Nonnull String toDescMethod(final @Nonnull Object returnType, final @Nonnull Object... rawDesc) {
 		final StringBuilder sb = new StringBuilder("(");
 		for (final Object o : rawDesc)
 			if (o!=null)

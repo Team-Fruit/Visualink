@@ -1,4 +1,4 @@
-package com.kamesuta.mc.tooltip;
+package net.teamfruit.visualink;
 
 public class BlockPos {
 	public final int x, y, z;

@@ -1,4 +1,4 @@
-package com.kamesuta.mc.tooltip;
+package net.teamfruit.visualink;
 
 import java.lang.reflect.Field;
 import java.util.List;

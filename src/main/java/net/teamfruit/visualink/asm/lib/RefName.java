@@ -1,4 +1,4 @@
-package com.kamesuta.mc.tooltip.asm.lib;
+package net.teamfruit.visualink.asm.lib;
 
 import javax.annotation.Nonnull;
 

@@ -1,4 +1,4 @@
-package com.kamesuta.mc.tooltip;
+package net.teamfruit.visualink;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

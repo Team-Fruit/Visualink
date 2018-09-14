@@ -1,4 +1,4 @@
-package com.kamesuta.mc.tooltip.asm;
+package net.teamfruit.visualink.asm;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.kamesuta.mc.tooltip;
+package net.teamfruit.visualink;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -34,6 +34,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.teamfruit.visualink.network.NetworkHandler;
+import net.teamfruit.visualink.network.VisualinkPacketHandler;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
 public class Tooltip {
@@ -61,6 +63,8 @@ public class Tooltip {
 
 		ClientRegistry.registerKeyBinding(this.toggleXrayBinding);
 		ClientRegistry.registerKeyBinding(this.toggleXrayGui);
+
+		VisualinkPacketHandler.INSTANCE.ordinal();
 	}
 
 	@Mod.EventHandler
@@ -70,6 +74,8 @@ public class Tooltip {
 		this.mc = Minecraft.getMinecraft();
 
 		FMLCommonHandler.instance().bus().register(this);
+		FMLCommonHandler.instance().bus().register(new NetworkHandler());
+
 		MinecraftForge.EVENT_BUS.register(this);
 
 		TooltipBlocks.init();
