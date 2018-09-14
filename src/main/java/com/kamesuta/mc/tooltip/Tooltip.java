@@ -41,9 +41,8 @@ public class Tooltip {
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
-		if (event.getSide() == Side.SERVER) {
+		if (event.getSide()==Side.SERVER)
 			return;
-		}
 		final Configuration cfg = new Configuration(event.getSuggestedConfigurationFile());
 		cfg.load();
 		radius = cfg.get("Xray-Variables", "radius", 45, "Radius for X-ray").getInt();
@@ -59,7 +58,7 @@ public class Tooltip {
 
 	@Mod.EventHandler
 	public void init(final FMLInitializationEvent event) {
-		if (event.getSide() == Side.SERVER)
+		if (event.getSide()==Side.SERVER)
 			return;
 		this.mc = Minecraft.getMinecraft();
 
@@ -71,16 +70,16 @@ public class Tooltip {
 
 	@Mod.EventHandler
 	public void postInit(final FMLPostInitializationEvent event) {
-		if (event.getSide() == Side.SERVER)
+		if (event.getSide()==Side.SERVER)
 			return;
-		displayListid = GL11.glGenLists(5) + 3;
+		displayListid = GL11.glGenLists(5)+3;
 	}
 
 	@SubscribeEvent
 	public boolean onTickInGame(final TickEvent.ClientTickEvent e) {
-		if ((!(toggleXray)) || (this.mc.theWorld == null))
+		if (!toggleXray||this.mc.theWorld==null)
 			return true;
-		if (cooldownTicks < 1) {
+		if (cooldownTicks<1) {
 			compileDL();
 			cooldownTicks = 80;
 		}
@@ -100,30 +99,31 @@ public class Tooltip {
 		final WorldClient world = this.mc.theWorld;
 
 		final EntityClientPlayerMP player = this.mc.thePlayer;
-		if ((world == null) || (player == null))
+		if (world==null||player==null)
 			return;
-		for (int i = (int) player.posX - radius; i <= (int) player.posX + radius; ++i) {
-			for (int j = (int) player.posZ - radius; j <= (int) player.posZ + radius; ++j) {
+		for (int i = (int) player.posX-radius; i<=(int) player.posX+radius; ++i)
+			for (int j = (int) player.posZ-radius; j<=(int) player.posZ+radius; ++j) {
 				int k = 0;
 				Block bId;
-				for (final int height = world.getHeightValue(i, j); k <= height; ++k) {
+				for (final int height = world.getHeightValue(i, j); k<=height; ++k) {
 					bId = world.getBlock(i, k, j);
-					if (bId == Blocks.air)
+					if (bId==Blocks.air)
 						continue;
-					if (bId != Blocks.stone)
+					if (bId!=Blocks.stone)
 						for (final TooltipBlocks block : TooltipBlocks.blocks) {
 							if (block.enabled)
 								;
 							final Block blocki = (Block) Block.blockRegistry.getObject(block.id);
-							if ((blocki == bId)
-									&& (((block.meta == -1) || (block.meta == world.getBlockMetadata(i, k, j))))) {
+							if (
+								blocki==bId
+										&&(block.meta==-1||block.meta==world.getBlockMetadata(i, k, j))
+							) {
 								renderBlock(i, k, j, block);
 								break;
 							}
 						}
 				}
 			}
-		}
 		GL11.glEnd();
 		GL11.glEnable(GL_DEPTH_TEST);
 		GL11.glDisable(GL_BLEND);
@@ -135,70 +135,66 @@ public class Tooltip {
 		GL11.glColor4ub((byte) block.r, (byte) block.g, (byte) block.b, (byte) block.a);
 
 		GL11.glVertex3f(x, y, z);
-		GL11.glVertex3f(x + 1, y, z);
+		GL11.glVertex3f(x+1, y, z);
 
-		GL11.glVertex3f(x + 1, y, z);
-		GL11.glVertex3f(x + 1, y, z + 1);
-
-		GL11.glVertex3f(x, y, z);
-		GL11.glVertex3f(x, y, z + 1);
-
-		GL11.glVertex3f(x, y, z + 1);
-		GL11.glVertex3f(x + 1, y, z + 1);
-
-		GL11.glVertex3f(x, y + 1, z);
-		GL11.glVertex3f(x + 1, y + 1, z);
-
-		GL11.glVertex3f(x + 1, y + 1, z);
-		GL11.glVertex3f(x + 1, y + 1, z + 1);
-
-		GL11.glVertex3f(x, y + 1, z);
-		GL11.glVertex3f(x, y + 1, z + 1);
-
-		GL11.glVertex3f(x, y + 1, z + 1);
-		GL11.glVertex3f(x + 1, y + 1, z + 1);
+		GL11.glVertex3f(x+1, y, z);
+		GL11.glVertex3f(x+1, y, z+1);
 
 		GL11.glVertex3f(x, y, z);
-		GL11.glVertex3f(x, y + 1, z);
+		GL11.glVertex3f(x, y, z+1);
 
-		GL11.glVertex3f(x, y, z + 1);
-		GL11.glVertex3f(x, y + 1, z + 1);
+		GL11.glVertex3f(x, y, z+1);
+		GL11.glVertex3f(x+1, y, z+1);
 
-		GL11.glVertex3f(x + 1, y, z);
-		GL11.glVertex3f(x + 1, y + 1, z);
+		GL11.glVertex3f(x, y+1, z);
+		GL11.glVertex3f(x+1, y+1, z);
 
-		GL11.glVertex3f(x + 1, y, z + 1);
-		GL11.glVertex3f(x + 1, y + 1, z + 1);
+		GL11.glVertex3f(x+1, y+1, z);
+		GL11.glVertex3f(x+1, y+1, z+1);
+
+		GL11.glVertex3f(x, y+1, z);
+		GL11.glVertex3f(x, y+1, z+1);
+
+		GL11.glVertex3f(x, y+1, z+1);
+		GL11.glVertex3f(x+1, y+1, z+1);
+
+		GL11.glVertex3f(x, y, z);
+		GL11.glVertex3f(x, y+1, z);
+
+		GL11.glVertex3f(x, y, z+1);
+		GL11.glVertex3f(x, y+1, z+1);
+
+		GL11.glVertex3f(x+1, y, z);
+		GL11.glVertex3f(x+1, y+1, z);
+
+		GL11.glVertex3f(x+1, y, z+1);
+		GL11.glVertex3f(x+1, y+1, z+1);
 	}
 
 	@SubscribeEvent
 	public void keyboardEvent(final InputEvent.KeyInputEvent key) {
-		if (!(this.mc.currentScreen instanceof GuiScreen)) {
+		if (!(this.mc.currentScreen instanceof GuiScreen))
 			if (this.toggleXrayBinding.isPressed()) {
-				toggleXray = !(toggleXray);
+				toggleXray = !toggleXray;
 				if (toggleXray)
 					cooldownTicks = 0;
 				else
 					GL11.glDeleteLists(displayListid, 1);
 			}
-
-			if (this.toggleXrayGui.isPressed())
-				GuiBlockList.show();
-		}
 	}
 
 	@SubscribeEvent
 	public void renderWorldLastEvent(final RenderWorldLastEvent evt) {
-		if ((!(toggleXray)) || (this.mc.theWorld == null))
+		if (!toggleXray||this.mc.theWorld==null)
 			return;
 		final double doubleX = this.mc.thePlayer.lastTickPosX
-				+ (this.mc.thePlayer.posX - this.mc.thePlayer.lastTickPosX) * evt.partialTicks;
+				+(this.mc.thePlayer.posX-this.mc.thePlayer.lastTickPosX)*evt.partialTicks;
 
 		final double doubleY = this.mc.thePlayer.lastTickPosY
-				+ (this.mc.thePlayer.posY - this.mc.thePlayer.lastTickPosY) * evt.partialTicks;
+				+(this.mc.thePlayer.posY-this.mc.thePlayer.lastTickPosY)*evt.partialTicks;
 
 		final double doubleZ = this.mc.thePlayer.lastTickPosZ
-				+ (this.mc.thePlayer.posZ - this.mc.thePlayer.lastTickPosZ) * evt.partialTicks;
+				+(this.mc.thePlayer.posZ-this.mc.thePlayer.lastTickPosZ)*evt.partialTicks;
 
 		GL11.glPushMatrix();
 		GL11.glTranslated(-doubleX, -doubleY, -doubleZ);
@@ -208,14 +204,14 @@ public class Tooltip {
 
 	@SubscribeEvent
 	public void onDraw(final RenderGameOverlayEvent.Post event) {
-		if(event.type == ElementType.EXPERIENCE)
+		if (event.type==ElementType.EXPERIENCE)
 			if (toggleXray) {
 				final FontRenderer font = this.mc.fontRenderer;
 
 				glPushMatrix();
 
 				final String str = "Xray";
-				font.drawStringWithShadow(str, this.mc.displayWidth/2 - font.getStringWidth(str), 0, 0xffffff);
+				font.drawStringWithShadow(str, this.mc.displayWidth/2-font.getStringWidth(str), 0, 0xffffff);
 
 				glPopMatrix();
 			}

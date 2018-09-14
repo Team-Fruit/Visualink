@@ -36,8 +36,8 @@ public class TooltipBlocks {
 
 	@Override
 	public String toString() {
-		return this.r + " " + this.g + " " + this.b + " " + this.a + " " + this.meta + " " + this.id + " "
-				+ this.enabled;
+		return this.r+" "+this.g+" "+this.b+" "+this.a+" "+this.meta+" "+this.id+" "
+				+this.enabled;
 	}
 
 	public static TooltipBlocks fromString(final String s) {
@@ -70,7 +70,7 @@ public class TooltipBlocks {
 	}
 
 	public static void removeInvalidBlocks() {
-		for (int i = 0; i < blocks.size(); ++i) {
+		for (int i = 0; i<blocks.size(); ++i) {
 			final TooltipBlocks block = blocks.get(i);
 			if (Block.blockRegistry.containsKey(block.id))
 				continue;
@@ -85,18 +85,18 @@ public class TooltipBlocks {
 			e.printStackTrace();
 		}
 		removeInvalidBlocks();
-		if (blocks.size() != 0)
+		if (blocks.size()!=0)
 			return;
 		setStandardList();
 	}
 
 	private static void load() throws Exception {
 		final File toLoad = new File(Minecraft.getMinecraft().mcDataDir, "xrayBlocks.dat");
-		if ((toLoad.exists()) && (!(toLoad.isDirectory()))) {
+		if (toLoad.exists()&&!toLoad.isDirectory()) {
 			final ArrayList<TooltipBlocks> block = new ArrayList<TooltipBlocks>();
 			final BufferedReader br = new BufferedReader(new FileReader(toLoad));
 			String s;
-			for (; (s = br.readLine()) != null; block.add(fromString(s)))
+			for (; (s = br.readLine())!=null; block.add(fromString(s)))
 				;
 			br.close();
 			blocks = block;
@@ -105,11 +105,10 @@ public class TooltipBlocks {
 
 	static void save() throws IOException {
 		final File toSave = new File(Minecraft.getMinecraft().mcDataDir, "xrayBlocks.dat");
-		if (toSave.exists()) {
+		if (toSave.exists())
 			toSave.delete();
-		}
 		final BufferedWriter bw = new BufferedWriter(new FileWriter(toSave));
-		for (int i = 0; i < blocks.size(); ++i) {
+		for (int i = 0; i<blocks.size(); ++i) {
 			bw.write(blocks.get(i).toString());
 			bw.newLine();
 		}
