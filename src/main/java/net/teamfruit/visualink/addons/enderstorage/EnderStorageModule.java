@@ -1,4 +1,4 @@
-package net.teamfruit.visualink.addons;
+package net.teamfruit.visualink.addons.enderstorage;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Level;
 import net.minecraft.tileentity.TileEntity;
 import net.teamfruit.visualink.Reference;
 import net.teamfruit.visualink.VisualinkBlocks;
+import net.teamfruit.visualink.addons.IAccessor;
+import net.teamfruit.visualink.addons.IdentifierProvider;
 
 public class EnderStorageModule {
 	public static Class<?> TileFrequencyOwner = null;
@@ -56,8 +58,8 @@ public class EnderStorageModule {
 					final String owner = (String) TileFrequencyOwner_Owner.get(tile);
 					return accessor.getBlockID()+"@"+(isTank ? "t" : "c")+freq+"@"+owner;
 				} catch (final Exception arg8) {
-					return null;
 				}
+				return null;
 			}
 		}));
 	}

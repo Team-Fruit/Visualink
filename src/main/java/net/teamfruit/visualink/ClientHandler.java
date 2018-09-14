@@ -82,88 +82,88 @@ public class ClientHandler {
 		final WorldClient world = this.mc.theWorld;
 
 		final EntityClientPlayerMP player = this.mc.thePlayer;
-		if (world==null||player==null)
-			return;
-		final Multimap<String, BlockPos> map = ArrayListMultimap.create();
-		for (int i = (int) player.posX-radius; i<=(int) player.posX+radius; ++i)
-			for (int j = (int) player.posZ-radius; j<=(int) player.posZ+radius; ++j) {
-				int k = 0;
-				Block bId;
-				for (final int height = world.getHeightValue(i, j); k<=height; ++k) {
-					bId = world.getBlock(i, k, j);
-					if (bId==Blocks.air)
-						continue;
-					if (bId!=Blocks.stone)
-						for (final VisualinkBlocks block : VisualinkBlocks.blocks) {
-							final Block blocki = (Block) Block.blockRegistry.getObject(block.id);
-							if (
-								blocki==bId
-							) {
-								final BlockPos pos = new BlockPos(i, k, j);
-								final IdentifierProvider provider = block.provider;
-								final String id = provider==null ? block.id : provider.provide(new IAccessor() {
-									@Override
-									public TileEntity getTileEntity() {
-										if (blocki.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
-											return world.getTileEntity(pos.x, pos.y, pos.z);
-										return null;
-									}
+		if (world!=null&&player!=null) {
+			final Multimap<String, BlockPos> map = ArrayListMultimap.create();
+			for (int i = (int) player.posX-radius; i<=(int) player.posX+radius; ++i)
+				for (int j = (int) player.posZ-radius; j<=(int) player.posZ+radius; ++j) {
+					int k = 0;
+					Block bId;
+					for (final int height = world.getHeightValue(i, j); k<=height; ++k) {
+						bId = world.getBlock(i, k, j);
+						if (bId==Blocks.air)
+							continue;
+						if (bId!=Blocks.stone)
+							for (final VisualinkBlocks block : VisualinkBlocks.blocks) {
+								final Block blocki = block.getBlock();
+								if (
+									blocki==bId
+								) {
+									final BlockPos pos = new BlockPos(i, k, j);
+									final IdentifierProvider provider = block.provider;
+									final String id = provider==null ? block.id : provider.provide(new IAccessor() {
+										@Override
+										public TileEntity getTileEntity() {
+											if (blocki.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
+												return world.getTileEntity(pos.x, pos.y, pos.z);
+											return null;
+										}
 
-									@Override
-									public BlockPos getPosition() {
-										return pos;
-									}
+										@Override
+										public BlockPos getPosition() {
+											return pos;
+										}
 
-									@Override
-									public int getMetadata() {
-										return world.getBlockMetadata(pos.x, pos.y, pos.z);
-									}
+										@Override
+										public int getMetadata() {
+											return world.getBlockMetadata(pos.x, pos.y, pos.z);
+										}
 
-									@Override
-									public String getBlockID() {
-										return block.id;
-									}
+										@Override
+										public String getBlockID() {
+											return block.id;
+										}
 
-									@Override
-									public Block getBlock() {
-										return blocki;
-									}
-								});
-								renderBlock(pos, block);
-								if (id!=null)
-									map.put(id, pos);
-								break;
+										@Override
+										public Block getBlock() {
+											return blocki;
+										}
+									});
+									//renderBlock(pos, block);
+									if (id!=null)
+										map.put(id, pos);
+									break;
+								}
 							}
-						}
+					}
 				}
-			}
-		for (final Entry<String, Collection<BlockPos>> entry : map.asMap().entrySet()) {
-			//Block block = entry.getKey();
-			final Collection<BlockPos> poses = entry.getValue();
+			for (final Entry<String, Collection<BlockPos>> entry : map.asMap().entrySet()) {
+				//Block block = entry.getKey();
+				final Collection<BlockPos> poses = entry.getValue();
 
-			int count = 0;
-			float x = 0, y = 0, z = 0;
-			for (final BlockPos pos : poses)
-				if (count++<=0) {
-					x = pos.x;
-					y = pos.y;
-					z = pos.z;
-				} else {
-					x += pos.x;
-					y += pos.y;
-					z += pos.z;
+				int count = 0;
+				float x = 0, y = 0, z = 0;
+				for (final BlockPos pos : poses)
+					if (count++<=0) {
+						x = pos.x;
+						y = pos.y;
+						z = pos.z;
+					} else {
+						x += pos.x;
+						y += pos.y;
+						z += pos.z;
+					}
+
+				if (count<=0)
+					continue;
+
+				x /= count;
+				y /= count;
+				z /= count;
+
+				for (final BlockPos pos : poses) {
+					glVertex3f(x+.5f, y+.5f, z+.5f);
+					glVertex3f(pos.x+.5f, pos.y+.5f, pos.z+.5f);
 				}
-
-			if (count<=0)
-				continue;
-
-			x /= count;
-			y /= count;
-			z /= count;
-
-			for (final BlockPos pos : poses) {
-				glVertex3f(x+.5f, y+.5f, z+.5f);
-				glVertex3f(pos.x+.5f, pos.y+.5f, pos.z+.5f);
 			}
 		}
 		GL11.glEnd();
