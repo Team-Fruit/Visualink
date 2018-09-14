@@ -15,6 +15,7 @@ import net.teamfruit.visualink.VisualinkBlocks;
 public class EnderStorageModule {
 	public static Class<?> TileFrequencyOwner = null;
 	public static Field TileFrequencyOwner_Freq = null;
+	public static Field TileFrequencyOwner_Owner = null;
 	public static Class<?> TileEnderTank = null;
 
 	public static void register(final List<VisualinkBlocks> blocks) {
@@ -29,6 +30,7 @@ public class EnderStorageModule {
 		try {
 			TileFrequencyOwner = Class.forName("codechicken.enderstorage.common.TileFrequencyOwner");
 			TileFrequencyOwner_Freq = TileFrequencyOwner.getField("freq");
+			TileFrequencyOwner_Owner = TileFrequencyOwner.getField("owner");
 
 			TileEnderTank = Class.forName("codechicken.enderstorage.storage.liquid.TileEnderTank");
 		} catch (final ClassNotFoundException arg0) {
@@ -49,9 +51,10 @@ public class EnderStorageModule {
 					final TileEntity tile = accessor.getTileEntity();
 					if (tile==null)
 						return null;
-					final int e = TileFrequencyOwner_Freq.getInt(tile);
-					final boolean b = TileEnderTank.isInstance(tile);
-					return accessor.getBlockID()+"@"+(b ? "t" : "c")+e;
+					final int freq = TileFrequencyOwner_Freq.getInt(tile);
+					final boolean isTank = TileEnderTank.isInstance(tile);
+					final String owner = (String) TileFrequencyOwner_Owner.get(tile);
+					return accessor.getBlockID()+"@"+(isTank ? "t" : "c")+freq+"@"+owner;
 				} catch (final Exception arg8) {
 					return null;
 				}
