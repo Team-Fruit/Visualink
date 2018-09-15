@@ -25,7 +25,7 @@ public class BarrelLink {
 
 	public void readFromNBT(final NBTTagCompound nbt) {
 		try {
-			final Field field = BSpaceStorageHandler.class.getDeclaredField("links");
+			final Field field = JABBAModule.BSpaceStorageHandler.getDeclaredField("links");
 			field.setAccessible(true);
 
 			if (nbt.hasKey("links")) {
@@ -42,10 +42,11 @@ public class BarrelLink {
 
 	public void writeToNBT(final NBTTagCompound nbt) {
 		try {
-			final Field field = BSpaceStorageHandler.class.getDeclaredField("links");
+			final Field field = JABBAModule.BSpaceStorageHandler.getDeclaredField("links");
 			field.setAccessible(true);
+			final Object instance = JABBAModule.BSpaceStorageHandler_Instance.invoke(null);
 			@SuppressWarnings("unchecked")
-			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(BSpaceStorageHandler.instance());
+			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(instance);
 
 			final NBTTagCompound list2 = new NBTTagCompound();
 			for (final Integer key1 : links.keySet())
