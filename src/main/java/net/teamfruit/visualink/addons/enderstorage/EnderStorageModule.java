@@ -29,6 +29,8 @@ public class EnderStorageModule {
 	public static Method ItemEnderStorage_GetFreq = null;
 	public static Method ItemEnderStorage_GetOwner = null;
 	public static Method ItemEnderStorage_GetMetadata = null;
+	public static Class<?> ItemEnderPouch = null;
+	public static Method ItemEnderPouch_GetOwner = null;
 
 	private static boolean installed = isInstalled();
 
@@ -91,6 +93,9 @@ public class EnderStorageModule {
 			ItemEnderStorage_GetFreq = ItemEnderStorage.getMethod("getFreq", ItemStack.class);
 			ItemEnderStorage_GetOwner = ItemEnderStorage.getMethod("getOwner", ItemStack.class);
 			ItemEnderStorage_GetMetadata = ItemEnderStorage.getMethod("getMetadata", int.class);
+
+			ItemEnderPouch = Class.forName("codechicken.enderstorage.storage.item.ItemEnderPouch");
+			ItemEnderPouch_GetOwner = ItemEnderPouch.getMethod("getOwner", ItemStack.class);
 		} catch (final ClassNotFoundException arg0) {
 			Reference.logger.log(Level.WARN, "[EnderStorage] Class not found. "+arg0);
 			return;
@@ -116,6 +121,25 @@ public class EnderStorageModule {
 						final int metadata = (Integer) ItemEnderStorage_GetMetadata.invoke(item, itemstack.getItemDamage());
 						final boolean isTank = metadata==1;
 						return accessor.getItemID()+"@"+(isTank ? "t" : "c")+freq+"@"+owner;
+					}
+				} catch (final Exception arg8) {
+				}
+				return null;
+			}
+		}));
+
+		items.add(new VisualinkItems("EnderStorage:enderPouch", new IItemIdentifierProvider() {
+			@Override
+			public @Nullable String provide(final @Nonnull IItemAccessor accessor) {
+				try {
+					final ItemStack itemstack = accessor.getItemStack();
+					if (itemstack==null)
+						return null;
+					final Item item = accessor.getItem();
+					if (ItemEnderPouch.isInstance(item)) {
+						final int freq = itemstack.getItemDamage();
+						final String owner = (String) ItemEnderPouch_GetOwner.invoke(item, itemstack);
+						return "EnderStorage:enderChest"+"@"+"c"+freq+"@"+owner;
 					}
 				} catch (final Exception arg8) {
 				}
