@@ -4,7 +4,7 @@
 		{
 			"modid": "visualink",
 			"name": "Visualink",
-			"description": "Visualize connections of Ender Storage and JABBA!",
+			"description": "Visualize connections of Ender Storage and JABBA containers!",
 			"mcversion": "${mcversion}",
 			"version": "${version}",
 			"authorList": [
