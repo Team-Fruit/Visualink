@@ -165,13 +165,25 @@ public class ClientHandler {
 				if (count<=0)
 					continue;
 
+				int cx = (int) x, cy = (int) y, cz = (int) z;
+
 				x /= count;
 				y /= count;
 				z /= count;
 
 				for (final BlockPos pos : poses) {
+					final float length1 = (cx-x)*(cx-x)+(cy-y)*(cy-y)+(cz-z)*(cz-z);
+					final float length2 = (pos.x-x)*(pos.x-x)+(pos.y-y)*(pos.y-y)+(pos.z-z)*(pos.z-z);
+					if (length2<=length1) {
+						cx = pos.x;
+						cy = pos.y;
+						cz = pos.z;
+					}
+				}
+
+				for (final BlockPos pos : poses) {
 					GL11.glColor4ub((byte) 0, (byte) 0, (byte) 255, (byte) 255);
-					glVertex3f(x+.5f, y+.5f, z+.5f);
+					glVertex3f(cx+.5f, cy+.5f, cz+.5f);
 					glVertex3f(pos.x+.5f, pos.y+.5f, pos.z+.5f);
 				}
 			}
