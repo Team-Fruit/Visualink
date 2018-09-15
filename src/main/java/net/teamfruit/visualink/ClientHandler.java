@@ -5,13 +5,18 @@ import static org.lwjgl.opengl.GL11.*;
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -26,6 +31,7 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,6 +40,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.teamfruit.visualink.addons.IBlockAccessor;
 import net.teamfruit.visualink.addons.IBlockIdentifierProvider;
@@ -80,6 +87,78 @@ public class ClientHandler {
 		return true;
 	}
 
+	public String getItemId(final ItemStack itemStack) {
+		String itemId = null;
+		if (itemStack!=null) {
+			final Item item = itemStack.getItem();
+			for (final VisualinkItems visualinkitem : VisualinkItems.items) {
+				final Item itemi = visualinkitem.getItem();
+				if (
+					itemi==item
+				) {
+					final IItemIdentifierProvider provider = visualinkitem.provider;
+					itemId = provider==null ? visualinkitem.id : provider.provide(new IItemAccessor() {
+						@Override
+						public ItemStack getItemStack() {
+							return itemStack;
+						}
+
+						@Override
+						public String getItemID() {
+							return visualinkitem.id;
+						}
+
+						@Override
+						public Item getItem() {
+							return item;
+						}
+					});
+
+					break;
+				}
+			}
+		}
+		return itemId;
+	}
+
+	@SubscribeEvent
+	public void onTooltip(final @Nonnull ItemTooltipEvent event) {
+		if (toggleVisualink) {
+			final ItemStack handItemStack = event.itemStack;
+			final String handItemId = getItemId(handItemStack);
+			if (handItemStack!=null&&handItemId!=null)
+				if (event.itemStack.getItem()==handItemStack.getItem()) {
+					int count = 0;
+					final Map<Integer, Integer> dimCount = Maps.newHashMap();
+					for (final Entry<BlockPos, Pair<Block, String>> entry : BlockManager.getInstance().getBlocks().entrySet()) {
+						final BlockPos pos = entry.getKey();
+						final Pair<Block, String> pair = entry.getValue();
+						if (StringUtils.equals(handItemId, pair.getValue())) {
+							count++;
+							final Integer dimCountInt = dimCount.get(pos.dim);
+							dimCount.put(pos.dim, (dimCountInt!=null ? dimCountInt : 0)+1);
+						}
+					}
+					if (count>0) {
+						final List<String> tooltip = event.toolTip;
+						tooltip.add(I18n.format("visualink.tooltip.connected", count));
+						final EntityClientPlayerMP player = this.mc.thePlayer;
+						if (player!=null) {
+							final int playerDim = player.dimension;
+							for (final Entry<Integer, Integer> entrydim : dimCount.entrySet()) {
+								final int dim = entrydim.getKey();
+								final int countdim = entrydim.getValue();
+								if (playerDim==dim)
+									tooltip.add(I18n.format("visualink.tooltip.connected.dim.player", dim, countdim));
+								else
+									tooltip.add(I18n.format("visualink.tooltip.connected.dim", dim, countdim));
+							}
+						}
+					}
+				}
+		}
+	}
+
 	private void compileDL() {
 		GL11.glNewList(Visualink.displayListid, GL11.GL_COMPILE);
 
@@ -90,41 +169,12 @@ public class ClientHandler {
 
 		GL11.glLineWidth(.5f);
 		GL11.glBegin(GL_LINES);
-		final WorldClient world = this.mc.theWorld;
 
+		final WorldClient world = this.mc.theWorld;
 		final EntityClientPlayerMP player = this.mc.thePlayer;
 		if (world!=null&&player!=null) {
-			String handitemid = null;
-			final ItemStack itemstack = player.getHeldItem();
-			if (itemstack!=null) {
-				final Item item = itemstack.getItem();
-				for (final VisualinkItems visualinkitem : VisualinkItems.items) {
-					final Item itemi = visualinkitem.getItem();
-					if (
-						itemi==item
-					) {
-						final IItemIdentifierProvider provider = visualinkitem.provider;
-						handitemid = provider==null ? visualinkitem.id : provider.provide(new IItemAccessor() {
-							@Override
-							public ItemStack getItemStack() {
-								return itemstack;
-							}
-
-							@Override
-							public String getItemID() {
-								return visualinkitem.id;
-							}
-
-							@Override
-							public Item getItem() {
-								return item;
-							}
-						});
-
-						break;
-					}
-				}
-			}
+			final ItemStack handItemStack = player.getHeldItem();
+			final String handItemId = getItemId(handItemStack);
 
 			final Multimap<String, BlockPos> map = ArrayListMultimap.create();
 			for (final Iterator<Entry<BlockPos, Pair<Block, String>>> itr = BlockManager.getInstance().getBlocks().entrySet().iterator(); itr.hasNext();) {
@@ -173,7 +223,7 @@ public class ClientHandler {
 								}));
 								if (blockdata.getValue()!=null) {
 									map.put(blockdata.getValue(), pos);
-									if (StringUtils.equals(handitemid, blockdata.getValue()))
+									if (StringUtils.equals(handItemId, blockdata.getValue()))
 										renderBlock(pos, visualinkblock);
 								}
 								break b;
