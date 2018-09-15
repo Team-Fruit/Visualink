@@ -21,8 +21,6 @@ import net.teamfruit.visualink.addons.IItemAccessor;
 import net.teamfruit.visualink.addons.IItemIdentifierProvider;
 
 public class EnderStorageModule {
-	private static boolean installed = isInstalled();
-
 	public static Class<?> TileFrequencyOwner = null;
 	public static Field TileFrequencyOwner_Freq = null;
 	public static Field TileFrequencyOwner_Owner = null;
@@ -31,6 +29,8 @@ public class EnderStorageModule {
 	public static Method ItemEnderStorage_GetFreq = null;
 	public static Method ItemEnderStorage_GetOwner = null;
 	public static Method ItemEnderStorage_GetMetadata = null;
+
+	private static boolean installed = isInstalled();
 
 	private static final boolean isInstalled() {
 		try {

@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.teamfruit.visualink.addons.IItemIdentifierProvider;
 import net.teamfruit.visualink.addons.enderstorage.EnderStorageModule;
+import net.teamfruit.visualink.addons.jabba.JABBAModule;
 
 public class VisualinkItems {
 	public static List<VisualinkItems> items = new ArrayList<VisualinkItems>();
@@ -42,6 +43,7 @@ public class VisualinkItems {
 
 	public static void setStandardList() {
 		EnderStorageModule.registerItems(items);
+		JABBAModule.registerItems(items);
 	}
 
 	public static void init() {
