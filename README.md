@@ -19,7 +19,7 @@ Visualize connections of EnderStorage and BetterBarrel!
 ## How to use
 
 1. Install mod on your client (Although EnderStorage can be used for introduction only on the client side, in order to view JABBA, it is also necessary to install it on the server side.)
-2. Press 'X' to toggle
+2. Press 'F4' to toggle
 
 ## Downloads
 

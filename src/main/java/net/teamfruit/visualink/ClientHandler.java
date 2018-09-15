@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -68,7 +69,7 @@ public class ClientHandler {
 	private final Minecraft mc = Minecraft.getMinecraft();
 
 	public void init() {
-		this.toggleVisualinkBinding = new KeyBinding("Toggle Visulink", 45, "Visulink");
+		this.toggleVisualinkBinding = new KeyBinding("Toggle Visulink", Keyboard.KEY_F4, "Visulink");
 		ClientRegistry.registerKeyBinding(this.toggleVisualinkBinding);
 	}
 
@@ -429,17 +430,16 @@ public class ClientHandler {
 
 	@SubscribeEvent
 	public void onDraw(final RenderGameOverlayEvent.Post event) {
-		if (event.type==ElementType.EXPERIENCE)
-			if (toggleVisualink) {
-				final FontRenderer font = this.mc.fontRenderer;
+		if (event.type==ElementType.EXPERIENCE) {
+			final FontRenderer font = this.mc.fontRenderer;
 
-				glPushMatrix();
+			GL11.glPushMatrix();
 
-				final String str = "Visualink";
-				font.drawStringWithShadow(str, this.mc.displayWidth/2-font.getStringWidth(str), 0, 0xffffff);
+			final String str = I18n.format("visualink.overlay", toggleVisualink ? I18n.format("visualink.overlay.enabled") : I18n.format("visualink.overlay.disabled"));
+			font.drawStringWithShadow(str, this.mc.displayWidth/2-font.getStringWidth(str), 0, 0xffffff);
 
-				glPopMatrix();
-			}
+			GL11.glPopMatrix();
+		}
 	}
 
 	@SubscribeEvent

@@ -1,3 +1,6 @@
+visualink.overlay=%s
+visualink.overlay.enabled=Visualink
+visualink.overlay.disabled=
 visualink.tooltip.connected=接続数: %d
 visualink.tooltip.connected.dim= - Dim %d: %d
 visualink.tooltip.connected.dim.player= - Dim %d: %d (現在地)
