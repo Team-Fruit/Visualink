@@ -14,9 +14,11 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -29,8 +31,10 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.teamfruit.visualink.addons.IAccessor;
 import net.teamfruit.visualink.addons.IdentifierProvider;
+import net.teamfruit.visualink.addons.jabba.BarrelLink;
 
 public class ClientHandler {
 	public static final ClientHandler instance = new ClientHandler();
@@ -64,7 +68,7 @@ public class ClientHandler {
 			return true;
 		if (cooldownTicks<1) {
 			compileDL();
-			BlockManager.instance.saveIfChanged();
+			BlockManager.getInstance().saveIfChanged();
 			cooldownTicks = 80;
 		}
 		cooldownTicks -= 1;
@@ -86,7 +90,7 @@ public class ClientHandler {
 		final EntityClientPlayerMP player = this.mc.thePlayer;
 		if (world!=null&&player!=null) {
 			final Multimap<String, BlockPos> map = ArrayListMultimap.create();
-			for (final Iterator<Entry<BlockPos, Pair<Block, String>>> itr = BlockManager.instance.getBlocks().entrySet().iterator(); itr.hasNext();) {
+			for (final Iterator<Entry<BlockPos, Pair<Block, String>>> itr = BlockManager.getInstance().getBlocks().entrySet().iterator(); itr.hasNext();) {
 				final Entry<BlockPos, Pair<Block, String>> entry = itr.next();
 				final BlockPos pos = entry.getKey();
 				if (world.provider.dimensionId!=pos.dim)
@@ -268,5 +272,13 @@ public class ClientHandler {
 
 				glPopMatrix();
 			}
+	}
+
+	@SubscribeEvent
+	public void invoke(final Unload event) {
+		if (FMLCommonHandler.instance().getEffectiveSide()==Side.CLIENT) {
+			BarrelLink.instance.links.clear();
+			BlockManager.getInstance().dispose();
+		}
 	}
 }

@@ -31,12 +31,23 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 
 public class BlockManager {
-	public static final BlockManager instance = new BlockManager();
+	private static final BlockManager instance = new BlockManager();
 
-	private final Map<BlockPos, Pair<Block, String>> map = Maps.newHashMap();
+	public static BlockManager getInstance() {
+		if (instance.map==null) {
+			instance.map = Maps.newHashMap();
+			instance.loadFromFile();
+		}
+		return instance;
+	}
+
+	public void dispose() {
+		this.map = null;
+	}
+
+	private Map<BlockPos, Pair<Block, String>> map;
 
 	private BlockManager() {
-		loadFromFile();
 	}
 
 	public void addBlock(final BlockPos pos, final Block block, final @Nullable String id) {

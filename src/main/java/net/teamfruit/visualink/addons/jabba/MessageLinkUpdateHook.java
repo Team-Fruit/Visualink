@@ -8,7 +8,7 @@ import net.teamfruit.visualink.Reference;
 public class MessageLinkUpdateHook {
 	public static void channelRead0x00(final TileEntity tile) {
 		Reference.logger.info("msg0x00: "+tile.xCoord+", "+tile.yCoord+", "+tile.zCoord);
-		BlockManager.instance.addBlock(new BlockPos(tile.getWorldObj().provider.dimensionId, tile.xCoord, tile.yCoord, tile.zCoord), tile.getBlockType(), null);
+		BlockManager.getInstance().addBlock(new BlockPos(tile.getWorldObj().provider.dimensionId, tile.xCoord, tile.yCoord, tile.zCoord), tile.getBlockType(), null);
 	}
 
 	public static void channelRead0x08(final TileEntity tile) {
