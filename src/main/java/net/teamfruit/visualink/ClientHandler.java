@@ -2,8 +2,10 @@ package net.teamfruit.visualink;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -224,6 +226,29 @@ public class ClientHandler {
 		addItemTooltop(event.itemStack, event.toolTip);
 	}
 
+	private static class NodeConnectionInfo {
+		public final Color color;
+
+		public NodeConnectionInfo(final Color color) {
+			this.color = color;
+		}
+	}
+
+	private final Map<String, NodeConnectionInfo> nodeInfo = new HashMap<String, NodeConnectionInfo>() {
+		@Override
+		public NodeConnectionInfo get(final Object str) {
+			NodeConnectionInfo info = super.get(str);
+			if (info!=null)
+				return info;
+			if (!(str instanceof String))
+				return null;
+			final Color color = Color.getHSBColor((float) Math.random(), 1.f, 1.f);
+			info = new NodeConnectionInfo(color);
+			super.put((String) str, info);
+			return info;
+		}
+	};
+
 	private void compileDL() {
 		GL11.glNewList(Visualink.displayListid, GL11.GL_COMPILE);
 
@@ -233,7 +258,6 @@ public class ClientHandler {
 		GL11.glBlendFunc(770, 771);
 
 		GL11.glLineWidth(.5f);
-		GL11.glBegin(GL_LINES);
 
 		final WorldClient world = this.mc.theWorld;
 		final EntityClientPlayerMP player = this.mc.thePlayer;
@@ -254,15 +278,18 @@ public class ClientHandler {
 					blockdata.setValue(blockId);
 					if (blockId!=null) {
 						map.put(blockId, pos);
-						if (StringUtils.equals(handItemId, blockId))
-							renderBlock(pos);
+						if (StringUtils.equals(handItemId, blockId)) {
+							final NodeConnectionInfo info = this.nodeInfo.get(blockId);
+							renderBlock(pos, info);
+						}
 					} else
 						itr.remove();
 				} else if (blockdata.getValue()!=null)
 					map.put(blockdata.getValue(), pos);
 			}
 			for (final Entry<String, Collection<BlockPos>> entry : map.asMap().entrySet()) {
-				//Block block = entry.getKey();
+				final String blockId = entry.getKey();
+				final NodeConnectionInfo info = this.nodeInfo.get(blockId);
 				final Collection<BlockPos> poses = entry.getValue();
 
 				int count = 0;
@@ -298,25 +325,37 @@ public class ClientHandler {
 				}
 
 				for (final BlockPos pos : poses) {
-					GL11.glColor4ub((byte) 0, (byte) 0, (byte) 255, (byte) 255);
-					glVertex3f(cx+.5f, cy+.5f, cz+.5f);
-					glVertex3f(pos.x+.5f, pos.y+.5f, pos.z+.5f);
+					GL11.glColor4f(info.color.getRed()/255.f, info.color.getGreen()/255.f, info.color.getBlue()/255.f, 100/255.f);
+					{
+						GL11.glBegin(GL_LINES);
+						glVertex3f(cx+.5f, cy+.5f, cz+.5f);
+						glVertex3f(pos.x+.5f, pos.y+.5f, pos.z+.5f);
+						GL11.glEnd();
+					}
+					GL11.glColor4f(info.color.getRed()/255.f, info.color.getGreen()/255.f, info.color.getBlue()/255.f, 255/255.f);
+					{
+						GL11.glPointSize(3);
+						GL11.glBegin(GL_POINTS);
+						glVertex3f(pos.x+.5f, pos.y+.5f, pos.z+.5f);
+						GL11.glEnd();
+					}
 				}
 			}
 		}
-		GL11.glEnd();
 		GL11.glEnable(GL_DEPTH_TEST);
 		GL11.glDisable(GL_BLEND);
 		GL11.glEnable(GL_TEXTURE_2D);
 		GL11.glEndList();
 	}
 
-	private void renderBlock(final BlockPos pos) {
+	private void renderBlock(final BlockPos pos, final NodeConnectionInfo info) {
 		final int x = pos.x;
 		final int y = pos.y;
 		final int z = pos.z;
 
-		GL11.glColor4ub((byte) 255, (byte) 255, (byte) 255, (byte) 255);
+		GL11.glColor4ub((byte) 255, (byte) 120, (byte) 200, (byte) 255);
+
+		GL11.glBegin(GL_LINES);
 
 		GL11.glVertex3f(x, y, z);
 		GL11.glVertex3f(x+1, y, z);
@@ -353,6 +392,8 @@ public class ClientHandler {
 
 		GL11.glVertex3f(x+1, y, z+1);
 		GL11.glVertex3f(x+1, y+1, z+1);
+
+		GL11.glEnd();
 	}
 
 	@SubscribeEvent
