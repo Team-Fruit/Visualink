@@ -1,6 +1,5 @@
 package net.teamfruit.visualink.network;
 
-import java.io.IOException;
 import java.util.EnumMap;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -16,9 +15,6 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTSizeTracker;
-import net.minecraft.nbt.NBTTagCompound;
 import net.teamfruit.visualink.addons.jabba.Message0x00UpdateBarrelLinks;
 
 public enum VisualinkPacketHandler {
@@ -78,29 +74,5 @@ public enum VisualinkPacketHandler {
 	public void sendToAll(final IVisualinkMessage message) {
 		this.channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(OutboundTarget.ALL);
 		this.channels.get(Side.SERVER).writeAndFlush(message).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
-	}
-
-	public void writeNBTTagCompoundToBuffer(final ByteBuf target, final NBTTagCompound tag) throws IOException {
-		if (tag==null)
-			target.writeShort(-1);
-
-		else {
-			final byte[] abyte = CompressedStreamTools.compress(tag);
-			target.writeShort((short) abyte.length);
-			target.writeBytes(abyte);
-		}
-	}
-
-	public NBTTagCompound readNBTTagCompoundFromBuffer(final ByteBuf dat) throws IOException {
-		final short short1 = dat.readShort();
-
-		if (short1<0)
-			return null;
-
-		else {
-			final byte[] abyte = new byte[short1];
-			dat.readBytes(abyte);
-			return CompressedStreamTools.func_152457_a(abyte, NBTSizeTracker.field_152451_a);
-		}
 	}
 }

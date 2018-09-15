@@ -64,6 +64,7 @@ public class ClientHandler {
 			return true;
 		if (cooldownTicks<1) {
 			compileDL();
+			BlockManager.instance.saveIfChanged();
 			cooldownTicks = 80;
 		}
 		cooldownTicks -= 1;
