@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.Level;
 
+import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -146,5 +147,11 @@ public class EnderStorageModule {
 				return null;
 			}
 		}));
+	}
+
+	public static void registerWaila(final IWailaRegistrar registrar) {
+		final EnderStorageHUDHandler handler = new EnderStorageHUDHandler();
+		registrar.registerBodyProvider(handler, TileFrequencyOwner);
+		registrar.registerNBTProvider(handler, TileFrequencyOwner);
 	}
 }

@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkCheckHandler;
@@ -44,6 +45,8 @@ public class Visualink {
 
 		VisualinkItems.init();
 		VisualinkBlocks.init();
+
+		FMLInterModComms.sendMessage("Waila", "register", "net.teamfruit.visualink.ClientHandler.callbackRegister");
 	}
 
 	@Mod.EventHandler

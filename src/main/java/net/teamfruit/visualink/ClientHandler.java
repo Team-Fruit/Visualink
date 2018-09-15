@@ -25,6 +25,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
+import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -46,6 +47,8 @@ import net.teamfruit.visualink.addons.IBlockAccessor;
 import net.teamfruit.visualink.addons.IBlockIdentifierProvider;
 import net.teamfruit.visualink.addons.IItemAccessor;
 import net.teamfruit.visualink.addons.IItemIdentifierProvider;
+import net.teamfruit.visualink.addons.enderstorage.EnderStorageHUDHandler;
+import net.teamfruit.visualink.addons.enderstorage.EnderStorageModule;
 import net.teamfruit.visualink.addons.jabba.BarrelLink;
 
 public class ClientHandler {
@@ -381,5 +384,9 @@ public class ClientHandler {
 			BarrelLink.instance.links.clear();
 			BlockManager.getInstance().dispose();
 		}
+	}
+
+	public static void callbackRegister(final IWailaRegistrar registrar) {
+		EnderStorageModule.registerWaila(registrar);
 	}
 }
