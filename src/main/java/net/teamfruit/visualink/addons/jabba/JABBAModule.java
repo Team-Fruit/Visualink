@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Level;
 import net.minecraft.tileentity.TileEntity;
 import net.teamfruit.visualink.Reference;
 import net.teamfruit.visualink.VisualinkBlocks;
-import net.teamfruit.visualink.addons.IAccessor;
-import net.teamfruit.visualink.addons.IdentifierProvider;
+import net.teamfruit.visualink.addons.IBlockAccessor;
+import net.teamfruit.visualink.addons.IBlockIdentifierProvider;
 
 public class JABBAModule {
 	public static Class<?> TileEntityBarrel = null;
@@ -42,9 +42,9 @@ public class JABBAModule {
 			return;
 		}
 
-		blocks.add(new VisualinkBlocks("JABBA:barrel", new IdentifierProvider() {
+		blocks.add(new VisualinkBlocks("JABBA:barrel", new IBlockIdentifierProvider() {
 			@Override
-			public @Nullable String provide(final @Nonnull IAccessor accessor) {
+			public @Nullable String provide(final @Nonnull IBlockAccessor accessor) {
 				try {
 					final TileEntity tile = accessor.getTileEntity();
 					if (tile==null)

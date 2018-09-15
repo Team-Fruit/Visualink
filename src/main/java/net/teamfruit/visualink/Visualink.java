@@ -42,6 +42,7 @@ public class Visualink {
 		FMLCommonHandler.instance().bus().register(ClientHandler.instance);
 		MinecraftForge.EVENT_BUS.register(ClientHandler.instance);
 
+		VisualinkItems.init();
 		VisualinkBlocks.init();
 	}
 

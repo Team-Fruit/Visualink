@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
@@ -26,14 +27,18 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.world.WorldEvent.Unload;
-import net.teamfruit.visualink.addons.IAccessor;
-import net.teamfruit.visualink.addons.IdentifierProvider;
+import net.teamfruit.visualink.addons.IBlockAccessor;
+import net.teamfruit.visualink.addons.IBlockIdentifierProvider;
+import net.teamfruit.visualink.addons.IItemAccessor;
+import net.teamfruit.visualink.addons.IItemIdentifierProvider;
 import net.teamfruit.visualink.addons.jabba.BarrelLink;
 
 public class ClientHandler {
@@ -89,27 +94,59 @@ public class ClientHandler {
 
 		final EntityClientPlayerMP player = this.mc.thePlayer;
 		if (world!=null&&player!=null) {
+			String handitemid = null;
+			final ItemStack itemstack = player.getHeldItem();
+			if (itemstack!=null) {
+				final Item item = itemstack.getItem();
+				for (final VisualinkItems visualinkitem : VisualinkItems.items) {
+					final Item itemi = visualinkitem.getItem();
+					if (
+						itemi==item
+					) {
+						final IItemIdentifierProvider provider = visualinkitem.provider;
+						handitemid = provider==null ? visualinkitem.id : provider.provide(new IItemAccessor() {
+							@Override
+							public ItemStack getItemStack() {
+								return itemstack;
+							}
+
+							@Override
+							public String getItemID() {
+								return visualinkitem.id;
+							}
+
+							@Override
+							public Item getItem() {
+								return item;
+							}
+						});
+
+						break;
+					}
+				}
+			}
+
 			final Multimap<String, BlockPos> map = ArrayListMultimap.create();
 			for (final Iterator<Entry<BlockPos, Pair<Block, String>>> itr = BlockManager.getInstance().getBlocks().entrySet().iterator(); itr.hasNext();) {
 				final Entry<BlockPos, Pair<Block, String>> entry = itr.next();
 				final BlockPos pos = entry.getKey();
 				if (world.provider.dimensionId!=pos.dim)
 					continue;
-				final Block bId = world.getBlock(pos.x, pos.y, pos.z);
+				final Block worldblock = world.getBlock(pos.x, pos.y, pos.z);
 				final Pair<Block, String> blockdata = entry.getValue();
 				final boolean chunkexists = world.getChunkFromBlockCoords(pos.x, pos.z).isChunkLoaded;
 				if (chunkexists)
 					b: {
-						for (final VisualinkBlocks block : VisualinkBlocks.blocks) {
-							final Block blocki = block.getBlock();
+						for (final VisualinkBlocks visualinkblock : VisualinkBlocks.blocks) {
+							final Block candidateblock = visualinkblock.getBlock();
 							if (
-								blocki==bId
+								candidateblock==worldblock
 							) {
-								final IdentifierProvider provider = block.provider;
-								blockdata.setValue(provider==null ? block.id : provider.provide(new IAccessor() {
+								final IBlockIdentifierProvider provider = visualinkblock.provider;
+								blockdata.setValue(provider==null ? visualinkblock.id : provider.provide(new IBlockAccessor() {
 									@Override
 									public TileEntity getTileEntity() {
-										if (blocki.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
+										if (candidateblock.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
 											return world.getTileEntity(pos.x, pos.y, pos.z);
 										return null;
 									}
@@ -126,17 +163,19 @@ public class ClientHandler {
 
 									@Override
 									public String getBlockID() {
-										return block.id;
+										return visualinkblock.id;
 									}
 
 									@Override
 									public Block getBlock() {
-										return blocki;
+										return candidateblock;
 									}
 								}));
-								//renderBlock(pos, block);
-								if (blockdata.getValue()!=null)
+								if (blockdata.getValue()!=null) {
 									map.put(blockdata.getValue(), pos);
+									if (StringUtils.equals(handitemid, blockdata.getValue()))
+										renderBlock(pos, visualinkblock);
+								}
 								break b;
 							}
 						}

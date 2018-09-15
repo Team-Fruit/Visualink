@@ -6,7 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.teamfruit.visualink.BlockPos;
 
-public interface IAccessor {
+public interface IBlockAccessor {
 	Block getBlock();
 
 	@Nullable

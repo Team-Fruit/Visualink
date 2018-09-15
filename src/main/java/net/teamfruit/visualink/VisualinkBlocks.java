@@ -7,17 +7,17 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
-import net.teamfruit.visualink.addons.IdentifierProvider;
+import net.teamfruit.visualink.addons.IBlockIdentifierProvider;
 import net.teamfruit.visualink.addons.enderstorage.EnderStorageModule;
 import net.teamfruit.visualink.addons.jabba.JABBAModule;
 
 public class VisualinkBlocks {
 	public static List<VisualinkBlocks> blocks = new ArrayList<VisualinkBlocks>();
 	public final String id;
-	public final @Nullable IdentifierProvider provider;
+	public final @Nullable IBlockIdentifierProvider provider;
 	private final AtomicReference<Object> block = new AtomicReference<Object>();
 
-	public VisualinkBlocks(final String id, @Nullable final IdentifierProvider provider) {
+	public VisualinkBlocks(final String id, @Nullable final IBlockIdentifierProvider provider) {
 		this.id = id;
 		this.provider = provider;
 	}
@@ -38,11 +38,11 @@ public class VisualinkBlocks {
 
 	@Override
 	public String toString() {
-		return String.format("TooltipBlocks [id=%s, provider=%s]", this.id, this.provider);
+		return String.format("VisualinkBlocks [id=%s, provider=%s]", this.id, this.provider);
 	}
 
 	public static void setStandardList() {
-		EnderStorageModule.register(blocks);
+		EnderStorageModule.registerBlocks(blocks);
 		JABBAModule.register(blocks);
 	}
 
