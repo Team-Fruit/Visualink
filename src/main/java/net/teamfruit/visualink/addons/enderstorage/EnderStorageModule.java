@@ -13,7 +13,7 @@ import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.teamfruit.visualink.Reference;
+import net.teamfruit.visualink.Log;
 import net.teamfruit.visualink.VisualinkBlocks;
 import net.teamfruit.visualink.VisualinkItems;
 import net.teamfruit.visualink.addons.IBlockAccessor;
@@ -38,10 +38,10 @@ public class EnderStorageModule {
 	private static final boolean isInstalled() {
 		try {
 			Class.forName("codechicken.enderstorage.EnderStorage");
-			Reference.logger.log(Level.INFO, "EnderStorage mod found.");
+			Log.log.log(Level.INFO, "EnderStorage mod found.");
 			return true;
 		} catch (final ClassNotFoundException arg4) {
-			Reference.logger.log(Level.INFO, "[EnderStorage] EnderStorage mod not found.");
+			Log.log.log(Level.INFO, "[EnderStorage] EnderStorage mod not found.");
 		}
 		return false;
 	}
@@ -57,13 +57,13 @@ public class EnderStorageModule {
 
 			TileEnderTank = Class.forName("codechicken.enderstorage.storage.liquid.TileEnderTank");
 		} catch (final ClassNotFoundException arg0) {
-			Reference.logger.log(Level.WARN, "[EnderStorage] Class not found. "+arg0);
+			Log.log.log(Level.WARN, "[EnderStorage] Class not found. "+arg0);
 			return;
 		} catch (final NoSuchFieldException arg2) {
-			Reference.logger.log(Level.WARN, "[EnderStorage] Field not found."+arg2);
+			Log.log.log(Level.WARN, "[EnderStorage] Field not found."+arg2);
 			return;
 		} catch (final Exception arg3) {
-			Reference.logger.log(Level.WARN, "[EnderStorage] Unhandled exception."+arg3);
+			Log.log.log(Level.WARN, "[EnderStorage] Unhandled exception."+arg3);
 			return;
 		}
 
@@ -98,13 +98,13 @@ public class EnderStorageModule {
 			ItemEnderPouch = Class.forName("codechicken.enderstorage.storage.item.ItemEnderPouch");
 			ItemEnderPouch_GetOwner = ItemEnderPouch.getMethod("getOwner", ItemStack.class);
 		} catch (final ClassNotFoundException arg0) {
-			Reference.logger.log(Level.WARN, "[EnderStorage] Class not found. "+arg0);
+			Log.log.log(Level.WARN, "[EnderStorage] Class not found. "+arg0);
 			return;
 		} catch (final NoSuchMethodException arg2) {
-			Reference.logger.log(Level.WARN, "[EnderStorage] Field not found."+arg2);
+			Log.log.log(Level.WARN, "[EnderStorage] Field not found."+arg2);
 			return;
 		} catch (final Exception arg3) {
-			Reference.logger.log(Level.WARN, "[EnderStorage] Unhandled exception."+arg3);
+			Log.log.log(Level.WARN, "[EnderStorage] Unhandled exception."+arg3);
 			return;
 		}
 

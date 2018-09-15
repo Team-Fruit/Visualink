@@ -2,15 +2,15 @@
 	"modListVersion": 2,
 	"modList": [
 		{
-			"modid": "tooltip",
-			"name": "Tooltip",
-			"description": "Tooltip!",
+			"modid": "visualink",
+			"name": "Visualink",
+			"description": "Visualize connections of Ender Storage and JABBA!",
 			"mcversion": "${mcversion}",
 			"version": "${version}",
 			"authorList": [
 				"Kamesuta"
 			],
-			"credits": "2016 Kamesuta",
+			"credits": "2018 TeamFruit",
 			"dependants": [],
 			"dependencies": ["Forge@[${minforgeversion},)"],
 			"parent": "",

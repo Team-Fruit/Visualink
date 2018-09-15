@@ -6,7 +6,7 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.teamfruit.visualink.Reference;
+import net.teamfruit.visualink.Log;
 import net.teamfruit.visualink.asm.lib.VisitorHelper;
 import net.teamfruit.visualink.asm.lib.VisitorHelper.TransformProvider;
 
@@ -20,7 +20,7 @@ public class VisualinkTransformer implements IClassTransformer {
 			return VisitorHelper.apply(bytes, name, new TransformProvider(ClassWriter.COMPUTE_FRAMES) {
 				@Override
 				public ClassVisitor createVisitor(final String name, final ClassVisitor cv) {
-					Reference.logger.info(String.format("Patching BSpaceStorageHandler.linkStorages (class: %s)", name));
+					Log.log.info(String.format("Patching BSpaceStorageHandler.linkStorages (class: %s)", name));
 					return new BSpaceStorageHandlerVisitor(name, cv);
 				}
 			});
@@ -29,7 +29,7 @@ public class VisualinkTransformer implements IClassTransformer {
 			return VisitorHelper.apply(bytes, name, new TransformProvider(ClassWriter.COMPUTE_FRAMES) {
 				@Override
 				public ClassVisitor createVisitor(final String name, final ClassVisitor cv) {
-					Reference.logger.info(String.format("Patching TileFrequencyOwner.handleDescriptionPacket (class: %s)", name));
+					Log.log.info(String.format("Patching TileFrequencyOwner.handleDescriptionPacket (class: %s)", name));
 					return new TileFrequencyOwnerVisitor(name, cv);
 				}
 			});
@@ -38,7 +38,7 @@ public class VisualinkTransformer implements IClassTransformer {
 			return VisitorHelper.apply(bytes, name, new TransformProvider(ClassWriter.COMPUTE_FRAMES) {
 				@Override
 				public ClassVisitor createVisitor(final String name, final ClassVisitor cv) {
-					Reference.logger.info(String.format("Patching mcp.mobius.betterbarrels.network.Message0x00FulleTileEntityNBT.channelRead0 (class: %s)", name));
+					Log.log.info(String.format("Patching mcp.mobius.betterbarrels.network.Message0x00FulleTileEntityNBT.channelRead0 (class: %s)", name));
 					return new Message0x00FulleTileEntityNBTVisitor(name, cv);
 				}
 			});
@@ -46,7 +46,7 @@ public class VisualinkTransformer implements IClassTransformer {
 			return VisitorHelper.apply(bytes, name, new TransformProvider(ClassWriter.COMPUTE_FRAMES) {
 				@Override
 				public ClassVisitor createVisitor(final String name, final ClassVisitor cv) {
-					Reference.logger.info(String.format("Patching mcp.mobius.betterbarrels.network.Message0x08LinkUpdate.channelRead0 (class: %s)", name));
+					Log.log.info(String.format("Patching mcp.mobius.betterbarrels.network.Message0x08LinkUpdate.channelRead0 (class: %s)", name));
 					return new Message0x08LinkUpdateVisitor(name, cv);
 				}
 			});

@@ -8,7 +8,7 @@ import java.util.Set;
 
 import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import net.minecraft.nbt.NBTTagCompound;
-import net.teamfruit.visualink.Reference;
+import net.teamfruit.visualink.Log;
 
 public class BarrelLink {
 	public static final BarrelLink instance = new BarrelLink();
@@ -79,7 +79,7 @@ public class BarrelLink {
 			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(BSpaceStorageHandler.instance());
 			return new BarrelLink(links);
 		} catch (final Exception e) {
-			Reference.logger.error("Failed to get barrel links: ", e);
+			Log.log.error("Failed to get barrel links: ", e);
 		}
 		return new BarrelLink();
 	}

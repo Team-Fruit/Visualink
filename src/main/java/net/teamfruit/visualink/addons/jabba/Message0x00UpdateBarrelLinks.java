@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import net.minecraft.nbt.NBTTagCompound;
-import net.teamfruit.visualink.Reference;
+import net.teamfruit.visualink.Log;
 import net.teamfruit.visualink.network.IVisualinkMessage;
 import net.teamfruit.visualink.network.VisualinkPacketHandler;
 
@@ -35,7 +35,7 @@ public class Message0x00UpdateBarrelLinks extends SimpleChannelInboundHandler<Me
 
 	@Override
 	protected void channelRead0(final ChannelHandlerContext ctx, final Message0x00UpdateBarrelLinks msg) throws Exception {
-		Reference.logger.info("Received server barrel links msg.");
+		Log.log.info("Received server barrel links msg.");
 		final BarrelLink manager = BarrelLink.instance;
 		if (manager!=null)
 			manager.readFromNBT(msg.fullLinksTag);

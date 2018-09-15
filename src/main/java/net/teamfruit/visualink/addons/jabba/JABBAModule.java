@@ -15,7 +15,7 @@ import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.teamfruit.visualink.Reference;
+import net.teamfruit.visualink.Log;
 import net.teamfruit.visualink.VisualinkBlocks;
 import net.teamfruit.visualink.VisualinkItems;
 import net.teamfruit.visualink.addons.IBlockAccessor;
@@ -34,10 +34,10 @@ public class JABBAModule {
 	private static final boolean isInstalled() {
 		try {
 			Class.forName("mcp.mobius.betterbarrels.BetterBarrels");
-			Reference.logger.log(Level.INFO, "JABBA mod found.");
+			Log.log.log(Level.INFO, "JABBA mod found.");
 			return true;
 		} catch (final ClassNotFoundException arg4) {
-			Reference.logger.log(Level.INFO, "[JABBA] JABBA mod not found.");
+			Log.log.log(Level.INFO, "[JABBA] JABBA mod not found.");
 		}
 		return false;
 	}
@@ -53,16 +53,16 @@ public class JABBAModule {
 			BSpaceStorageHandler = Class.forName("mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler");
 			BSpaceStorageHandler_Instance = BSpaceStorageHandler.getMethod("instance");
 		} catch (final ClassNotFoundException arg0) {
-			Reference.logger.log(Level.WARN, "[JABBA] Class not found. "+arg0);
+			Log.log.log(Level.WARN, "[JABBA] Class not found. "+arg0);
 			return;
 		} catch (final NoSuchMethodException arg1) {
-			Reference.logger.log(Level.WARN, "[JABBA] Method not found."+arg1);
+			Log.log.log(Level.WARN, "[JABBA] Method not found."+arg1);
 			return;
 		} catch (final NoSuchFieldException arg2) {
-			Reference.logger.log(Level.WARN, "[JABBA] Field not found."+arg2);
+			Log.log.log(Level.WARN, "[JABBA] Field not found."+arg2);
 			return;
 		} catch (final Exception arg3) {
-			Reference.logger.log(Level.WARN, "[JABBA] Unhandled exception."+arg3);
+			Log.log.log(Level.WARN, "[JABBA] Unhandled exception."+arg3);
 			return;
 		}
 
@@ -130,6 +130,5 @@ public class JABBAModule {
 		registrar.addConfig("JABBA", "jabba.connections");
 		final JABBAHUDHandler handler = new JABBAHUDHandler();
 		registrar.registerBodyProvider(handler, TileEntityBarrel);
-		registrar.registerNBTProvider(handler, TileEntityBarrel);
 	}
 }

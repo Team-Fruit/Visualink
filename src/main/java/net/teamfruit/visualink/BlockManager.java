@@ -79,7 +79,7 @@ public class BlockManager {
 				}
 			}
 		} catch (final Throwable t) {
-			Reference.logger.error("Couldn't get server name: ", t);
+			Log.log.error("Couldn't get server name: ", t);
 		}
 		return "server";
 	}
@@ -177,7 +177,7 @@ public class BlockManager {
 			CompressedStreamTools.writeCompressed(this.saveTag, dout);
 			dout.close();
 		} catch (final Exception e) {
-			Reference.logger.info("Visualink cache directory missing. Skipping saving state.");
+			Log.log.info("Visualink cache directory missing. Skipping saving state.");
 		}
 	}
 
@@ -209,9 +209,9 @@ public class BlockManager {
 
 			readFromNBT(this.saveTag);
 		} catch (final ZipException e) {
-			Reference.logger.error("Visualink cache data files have been corrupted.");
+			Log.log.error("Visualink cache data files have been corrupted.");
 		} catch (final IOException e) {
-			Reference.logger.error("Visualink cache data files could not been loaded.", e);
+			Log.log.error("Visualink cache data files could not been loaded.", e);
 		}
 	}
 }

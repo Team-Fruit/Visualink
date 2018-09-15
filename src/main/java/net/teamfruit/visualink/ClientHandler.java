@@ -66,7 +66,7 @@ public class ClientHandler {
 	private final Minecraft mc = Minecraft.getMinecraft();
 
 	public void init() {
-		this.toggleVisualinkBinding = new KeyBinding("Toggle Xray", 45, "Xray");
+		this.toggleVisualinkBinding = new KeyBinding("Toggle Visulink", 45, "Visulink");
 		ClientRegistry.registerKeyBinding(this.toggleVisualinkBinding);
 	}
 
@@ -360,7 +360,6 @@ public class ClientHandler {
 		if (!(this.mc.currentScreen instanceof GuiScreen))
 			if (this.toggleVisualinkBinding.isPressed()) {
 				toggleVisualink = !toggleVisualink;
-				//Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessageWithOptionalDeletion(new ChatComponentText("Link: "+(toggleXray ? "Visible" : "Hidden")), 1001419);
 				if (toggleVisualink)
 					cooldownTicks = 0;
 				else
