@@ -27,6 +27,10 @@ public class MethodMatcher {
 		this(cls.name(), description, refname);
 	}
 
+	public boolean matchPrecision(final @Nonnull String methodName, final @Nonnull String methodDesc) {
+		return methodDesc.equals(this.description)&&match(methodName, methodDesc);
+	}
+
 	public boolean match(final @Nonnull String methodName, final @Nonnull String methodDesc) {
 		if (methodName.equals(this.refname.mcpName()))
 			return true;

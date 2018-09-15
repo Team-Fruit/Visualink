@@ -25,6 +25,32 @@ public class VisualinkTransformer implements IClassTransformer {
 				}
 			});
 
+		if (transformedName.equals("codechicken.enderstorage.common.TileFrequencyOwner"))
+			return VisitorHelper.apply(bytes, name, new TransformProvider(ClassWriter.COMPUTE_FRAMES) {
+				@Override
+				public ClassVisitor createVisitor(final String name, final ClassVisitor cv) {
+					Reference.logger.info(String.format("Patching TileFrequencyOwner.handleDescriptionPacket (class: %s)", name));
+					return new TileFrequencyOwnerVisitor(name, cv);
+				}
+			});
+
+		if (transformedName.equals("mcp.mobius.betterbarrels.network.Message0x00FulleTileEntityNBT"))
+			return VisitorHelper.apply(bytes, name, new TransformProvider(ClassWriter.COMPUTE_FRAMES) {
+				@Override
+				public ClassVisitor createVisitor(final String name, final ClassVisitor cv) {
+					Reference.logger.info(String.format("Patching mcp.mobius.betterbarrels.network.Message0x00FulleTileEntityNBT.channelRead0 (class: %s)", name));
+					return new Message0x00FulleTileEntityNBTVisitor(name, cv);
+				}
+			});
+		if (transformedName.equals("mcp.mobius.betterbarrels.network.Message0x08LinkUpdate"))
+			return VisitorHelper.apply(bytes, name, new TransformProvider(ClassWriter.COMPUTE_FRAMES) {
+				@Override
+				public ClassVisitor createVisitor(final String name, final ClassVisitor cv) {
+					Reference.logger.info(String.format("Patching mcp.mobius.betterbarrels.network.Message0x08LinkUpdate.channelRead0 (class: %s)", name));
+					return new Message0x08LinkUpdateVisitor(name, cv);
+				}
+			});
+
 		return bytes;
 	}
 }
