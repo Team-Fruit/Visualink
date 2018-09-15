@@ -10,5 +10,5 @@ public class Reference {
 	public static final String FORGE = "${forgeversion}";
 	public static final String MINECRAFT = "${mcversion}";
 
-	public static Logger logger = LogManager.getLogger(Reference.MODID);
+	public static Logger logger = LogManager.getLogger(Reference.NAME);
 }

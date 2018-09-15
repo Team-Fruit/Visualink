@@ -15,6 +15,7 @@ import java.util.zip.ZipException;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -27,6 +28,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 
 public class BlockManager {
 	public static final BlockManager instance = new BlockManager();
@@ -55,20 +57,52 @@ public class BlockManager {
 		return this.map;
 	}
 
-	private static String getServerIP() {
-		final SocketAddress address = FMLClientHandler.instance().getClientToServerNetworkManager().getSocketAddress();
-		if (address!=null&&address instanceof InetSocketAddress) {
-			final InetSocketAddress inetAddr = (InetSocketAddress) address;
-			return inetAddr.toString();
+	public static String getLegacyServerName() {
+		try {
+			final NetworkManager netManager = FMLClientHandler.instance().getClientToServerNetworkManager();
+			if (netManager!=null) {
+				final SocketAddress socketAddress = netManager.getSocketAddress();
+				if (socketAddress!=null&&socketAddress instanceof InetSocketAddress) {
+					final InetSocketAddress inetAddr = (InetSocketAddress) socketAddress;
+					return inetAddr.getHostName();
+				}
+			}
+		} catch (final Throwable t) {
+			Reference.logger.error("Couldn't get server name: ", t);
 		}
-		return "unknown";
+		return "server";
+	}
+
+	public static String getWorldName(final Minecraft mc) {
+		String worldName = null;
+		if (mc.isSingleplayer())
+			return mc.getIntegratedServer().getFolderName();
+
+		worldName = mc.theWorld.getWorldInfo().getWorldName();
+		final String serverName = getLegacyServerName();
+
+		if (serverName==null)
+			return "offline";
+
+		if (!"MpServer".equals(worldName))
+			worldName = serverName+"_"+worldName;
+		else
+			worldName = serverName;
+
+		worldName = worldName.trim();
+
+		if (StringUtils.isEmpty(worldName.trim()))
+			worldName = "unnamed";
+
+		return worldName;
 	}
 
 	private static File getSaveDir() {
-		final File mcDir = Minecraft.getMinecraft().mcDataDir;
+		final Minecraft mc = Minecraft.getMinecraft();
+		final File mcDir = mc.mcDataDir;
 		final File visualinkDir = new File(mcDir, "visualink");
 		final File cacheDir = new File(visualinkDir, "caches");
-		final File serverDir = new File(cacheDir, getServerIP());
+		final File serverDir = new File(cacheDir, getWorldName(mc));
 		return serverDir;
 	}
 
