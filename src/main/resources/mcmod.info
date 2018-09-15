@@ -15,7 +15,7 @@
 			"dependencies": ["Forge@[${minforgeversion},)"],
 			"parent": "",
 			"requiredMods": ["Forge@[${minforgeversion},)"],
-			"logoFile": "",
+			"logoFile": "assets/visualink/textures/logo.png",
 			"screenshots": [],
 			"updateUrl": "",
 			"url": "",
