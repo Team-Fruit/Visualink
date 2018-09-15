@@ -4,8 +4,10 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -22,7 +24,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -84,58 +85,61 @@ public class ClientHandler {
 		final EntityClientPlayerMP player = this.mc.thePlayer;
 		if (world!=null&&player!=null) {
 			final Multimap<String, BlockPos> map = ArrayListMultimap.create();
-			for (int i = (int) player.posX-radius; i<=(int) player.posX+radius; ++i)
-				for (int j = (int) player.posZ-radius; j<=(int) player.posZ+radius; ++j) {
-					int k = 0;
-					Block bId;
-					for (final int height = world.getHeightValue(i, j); k<=height; ++k) {
-						bId = world.getBlock(i, k, j);
-						if (bId==Blocks.air)
-							continue;
-						if (bId!=Blocks.stone)
-							for (final VisualinkBlocks block : VisualinkBlocks.blocks) {
-								final Block blocki = block.getBlock();
-								if (
-									blocki==bId
-								) {
-									final BlockPos pos = new BlockPos(i, k, j);
-									final IdentifierProvider provider = block.provider;
-									final String id = provider==null ? block.id : provider.provide(new IAccessor() {
-										@Override
-										public TileEntity getTileEntity() {
-											if (blocki.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
-												return world.getTileEntity(pos.x, pos.y, pos.z);
-											return null;
-										}
+			for (final Iterator<Entry<BlockPos, Pair<Block, String>>> itr = BlockManager.instance.getBlocks().entrySet().iterator(); itr.hasNext();) {
+				final Entry<BlockPos, Pair<Block, String>> entry = itr.next();
+				final BlockPos pos = entry.getKey();
+				if (world.provider.dimensionId!=pos.dim)
+					continue;
+				final Block bId = world.getBlock(pos.x, pos.y, pos.z);
+				final Pair<Block, String> blockdata = entry.getValue();
+				final boolean chunkexists = world.getChunkFromBlockCoords(pos.x, pos.z).isChunkLoaded;
+				if (chunkexists)
+					b: {
+						for (final VisualinkBlocks block : VisualinkBlocks.blocks) {
+							final Block blocki = block.getBlock();
+							if (
+								blocki==bId
+							) {
+								final IdentifierProvider provider = block.provider;
+								blockdata.setValue(provider==null ? block.id : provider.provide(new IAccessor() {
+									@Override
+									public TileEntity getTileEntity() {
+										if (blocki.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
+											return world.getTileEntity(pos.x, pos.y, pos.z);
+										return null;
+									}
 
-										@Override
-										public BlockPos getPosition() {
-											return pos;
-										}
+									@Override
+									public BlockPos getPosition() {
+										return pos;
+									}
 
-										@Override
-										public int getMetadata() {
-											return world.getBlockMetadata(pos.x, pos.y, pos.z);
-										}
+									@Override
+									public int getMetadata() {
+										return world.getBlockMetadata(pos.x, pos.y, pos.z);
+									}
 
-										@Override
-										public String getBlockID() {
-											return block.id;
-										}
+									@Override
+									public String getBlockID() {
+										return block.id;
+									}
 
-										@Override
-										public Block getBlock() {
-											return blocki;
-										}
-									});
-									//renderBlock(pos, block);
-									if (id!=null)
-										map.put(id, pos);
-									break;
-								}
+									@Override
+									public Block getBlock() {
+										return blocki;
+									}
+								}));
+								//renderBlock(pos, block);
+								if (blockdata.getValue()!=null)
+									map.put(blockdata.getValue(), pos);
+								break b;
 							}
+						}
+						itr.remove();
 					}
-				}
+				else if (blockdata.getValue()!=null)
+					map.put(blockdata.getValue(), pos);
+			}
 			for (final Entry<String, Collection<BlockPos>> entry : map.asMap().entrySet()) {
 				//Block block = entry.getKey();
 				final Collection<BlockPos> poses = entry.getValue();
@@ -161,6 +165,7 @@ public class ClientHandler {
 				z /= count;
 
 				for (final BlockPos pos : poses) {
+					GL11.glColor4ub((byte) 0, (byte) 0, (byte) 255, (byte) 255);
 					glVertex3f(x+.5f, y+.5f, z+.5f);
 					glVertex3f(pos.x+.5f, pos.y+.5f, pos.z+.5f);
 				}
