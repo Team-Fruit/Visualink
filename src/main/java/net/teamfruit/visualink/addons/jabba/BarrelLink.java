@@ -25,7 +25,7 @@ public class BarrelLink {
 
 	public void readFromNBT(final NBTTagCompound nbt) {
 		try {
-			final Field field = JABBAModule.BSpaceStorageHandler.getDeclaredField("links");
+			final Field field = JABBAModuleServer.BSpaceStorageHandler.getDeclaredField("links");
 			field.setAccessible(true);
 
 			if (nbt.hasKey("links")) {
@@ -37,14 +37,15 @@ public class BarrelLink {
 				}
 			}
 		} catch (final Exception e) {
+			Log.log.error("Failed to load barrel link packet data", e);
 		}
 	}
 
 	public void writeToNBT(final NBTTagCompound nbt) {
 		try {
-			final Field field = JABBAModule.BSpaceStorageHandler.getDeclaredField("links");
+			final Field field = JABBAModuleServer.BSpaceStorageHandler.getDeclaredField("links");
 			field.setAccessible(true);
-			final Object instance = JABBAModule.BSpaceStorageHandler_Instance.invoke(null);
+			final Object instance = JABBAModuleServer.BSpaceStorageHandler_Instance.invoke(null);
 			@SuppressWarnings("unchecked")
 			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(instance);
 
@@ -53,6 +54,7 @@ public class BarrelLink {
 				list2.setIntArray(String.valueOf(key1), convertInts(links.get(key1)));
 			nbt.setTag("links", list2);
 		} catch (final Exception e) {
+			Log.log.error("Failed to create barrel link packet data", e);
 		}
 	}
 

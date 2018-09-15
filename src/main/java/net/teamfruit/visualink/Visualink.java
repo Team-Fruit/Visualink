@@ -16,6 +16,7 @@ import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.MinecraftForge;
 import net.teamfruit.visualink.addons.jabba.BarrelLinkNetwork;
+import net.teamfruit.visualink.addons.jabba.JABBAModuleServer;
 import net.teamfruit.visualink.network.VisualinkPacketHandler;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
@@ -36,6 +37,7 @@ public class Visualink {
 	@Mod.EventHandler
 	public void init(final FMLInitializationEvent event) {
 		FMLCommonHandler.instance().bus().register(new BarrelLinkNetwork());
+		JABBAModuleServer.register();
 
 		if (event.getSide()==Side.SERVER)
 			return;

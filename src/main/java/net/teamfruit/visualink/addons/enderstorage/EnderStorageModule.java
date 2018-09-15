@@ -33,7 +33,7 @@ public class EnderStorageModule {
 	public static Class<?> ItemEnderPouch = null;
 	public static Method ItemEnderPouch_GetOwner = null;
 
-	private static boolean installed = isInstalled();
+	public static boolean installed = isInstalled();
 
 	private static final boolean isInstalled() {
 		try {
@@ -79,6 +79,7 @@ public class EnderStorageModule {
 					final boolean isTank = TileEnderTank.isInstance(tile);
 					return accessor.getBlockID()+"@"+(isTank ? "t" : "c")+freq+"@"+owner;
 				} catch (final Exception arg8) {
+					Log.log.error("[EnderStorage] Could not load ender storage contents: ", arg8);
 				}
 				return null;
 			}
@@ -124,6 +125,7 @@ public class EnderStorageModule {
 						return accessor.getItemID()+"@"+(isTank ? "t" : "c")+freq+"@"+owner;
 					}
 				} catch (final Exception arg8) {
+					Log.log.error("[EnderStorage] Could not load ender storage contents: ", arg8);
 				}
 				return null;
 			}
@@ -143,6 +145,7 @@ public class EnderStorageModule {
 						return "EnderStorage:enderChest"+"@"+"c"+freq+"@"+owner;
 					}
 				} catch (final Exception arg8) {
+					Log.log.error("[EnderStorage] Could not load ender pouch contents: ", arg8);
 				}
 				return null;
 			}

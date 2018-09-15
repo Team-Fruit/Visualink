@@ -1,7 +1,6 @@
 package net.teamfruit.visualink.addons.jabba;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 
@@ -26,10 +25,8 @@ import net.teamfruit.visualink.addons.IItemIdentifierProvider;
 public class JABBAModule {
 	public static Class<?> TileEntityBarrel = null;
 	public static Field TileEntityBarrel_Id = null;
-	public static Class<?> BSpaceStorageHandler = null;
-	public static Method BSpaceStorageHandler_Instance = null;
 
-	private static boolean installed = isInstalled();
+	public static boolean installed = isInstalled();
 
 	private static final boolean isInstalled() {
 		try {
@@ -49,14 +46,8 @@ public class JABBAModule {
 		try {
 			TileEntityBarrel = Class.forName("mcp.mobius.betterbarrels.common.blocks.TileEntityBarrel");
 			TileEntityBarrel_Id = TileEntityBarrel.getField("id");
-
-			BSpaceStorageHandler = Class.forName("mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler");
-			BSpaceStorageHandler_Instance = BSpaceStorageHandler.getMethod("instance");
 		} catch (final ClassNotFoundException arg0) {
 			Log.log.log(Level.WARN, "[JABBA] Class not found. "+arg0);
-			return;
-		} catch (final NoSuchMethodException arg1) {
-			Log.log.log(Level.WARN, "[JABBA] Method not found."+arg1);
 			return;
 		} catch (final NoSuchFieldException arg2) {
 			Log.log.log(Level.WARN, "[JABBA] Field not found."+arg2);
@@ -82,6 +73,7 @@ public class JABBAModule {
 						return accessor.getBlockID()+"@"+g;
 					}
 				} catch (final Exception arg8) {
+					Log.log.error("[JABBA] Could not load barrel contents: ", arg8);
 				}
 				return null;
 			}
@@ -118,6 +110,7 @@ public class JABBAModule {
 						}
 					}
 				} catch (final Exception arg8) {
+					Log.log.error("[JABBA] Could not load dolly contents: ", arg8);
 				}
 				return null;
 			}
