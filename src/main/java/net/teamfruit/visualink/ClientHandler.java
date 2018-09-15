@@ -37,6 +37,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -47,9 +48,9 @@ import net.teamfruit.visualink.addons.IBlockAccessor;
 import net.teamfruit.visualink.addons.IBlockIdentifierProvider;
 import net.teamfruit.visualink.addons.IItemAccessor;
 import net.teamfruit.visualink.addons.IItemIdentifierProvider;
-import net.teamfruit.visualink.addons.enderstorage.EnderStorageHUDHandler;
 import net.teamfruit.visualink.addons.enderstorage.EnderStorageModule;
 import net.teamfruit.visualink.addons.jabba.BarrelLink;
+import net.teamfruit.visualink.addons.jabba.JABBAModule;
 
 public class ClientHandler {
 	public static final ClientHandler instance = new ClientHandler();
@@ -124,42 +125,103 @@ public class ClientHandler {
 		return itemId;
 	}
 
-	@SubscribeEvent
-	public void onTooltip(final @Nonnull ItemTooltipEvent event) {
-		if (toggleVisualink) {
-			final ItemStack handItemStack = event.itemStack;
-			final String handItemId = getItemId(handItemStack);
-			if (handItemStack!=null&&handItemId!=null)
-				if (event.itemStack.getItem()==handItemStack.getItem()) {
-					int count = 0;
-					final Map<Integer, Integer> dimCount = Maps.newHashMap();
-					for (final Entry<BlockPos, Pair<Block, String>> entry : BlockManager.getInstance().getBlocks().entrySet()) {
-						final BlockPos pos = entry.getKey();
-						final Pair<Block, String> pair = entry.getValue();
-						if (StringUtils.equals(handItemId, pair.getValue())) {
-							count++;
-							final Integer dimCountInt = dimCount.get(pos.dim);
-							dimCount.put(pos.dim, (dimCountInt!=null ? dimCountInt : 0)+1);
-						}
-					}
-					if (count>0) {
-						final List<String> tooltip = event.toolTip;
-						tooltip.add(I18n.format("visualink.tooltip.connected", count));
-						final EntityClientPlayerMP player = this.mc.thePlayer;
-						if (player!=null) {
-							final int playerDim = player.dimension;
-							for (final Entry<Integer, Integer> entrydim : dimCount.entrySet()) {
-								final int dim = entrydim.getKey();
-								final int countdim = entrydim.getValue();
-								if (playerDim==dim)
-									tooltip.add(I18n.format("visualink.tooltip.connected.dim.player", dim, countdim));
-								else
-									tooltip.add(I18n.format("visualink.tooltip.connected.dim", dim, countdim));
+	public String getBlockId(final TileEntity tile) {
+		String blockId = null;
+		if (tile!=null)
+			for (final VisualinkBlocks visualinkblock : VisualinkBlocks.blocks) {
+				final Block candidateblock = visualinkblock.getBlock();
+				if (
+					candidateblock==tile.blockType
+				) {
+					final World world = tile.getWorldObj();
+					if (world!=null) {
+						final BlockPos pos = new BlockPos(world.provider.dimensionId, tile.xCoord, tile.yCoord, tile.zCoord);
+
+						final IBlockIdentifierProvider provider = visualinkblock.provider;
+						blockId = provider==null ? visualinkblock.id : provider.provide(new IBlockAccessor() {
+							@Override
+							public TileEntity getTileEntity() {
+								if (candidateblock.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
+									return world.getTileEntity(pos.x, pos.y, pos.z);
+								return null;
 							}
+
+							@Override
+							public BlockPos getPosition() {
+								return pos;
+							}
+
+							@Override
+							public int getMetadata() {
+								return world.getBlockMetadata(pos.x, pos.y, pos.z);
+							}
+
+							@Override
+							public String getBlockID() {
+								return visualinkblock.id;
+							}
+
+							@Override
+							public Block getBlock() {
+								return candidateblock;
+							}
+						});
+					}
+					break;
+				}
+			}
+		return blockId;
+	}
+
+	public void addTooltop(final String id, final List<String> tooltip) {
+		if (toggleVisualink)
+			if (id!=null) {
+				int count = 0;
+				final Map<Integer, Integer> dimCount = Maps.newHashMap();
+				for (final Entry<BlockPos, Pair<Block, String>> entry : BlockManager.getInstance().getBlocks().entrySet()) {
+					final BlockPos pos = entry.getKey();
+					final Pair<Block, String> pair = entry.getValue();
+					if (StringUtils.equals(id, pair.getValue())) {
+						count++;
+						final Integer dimCountInt = dimCount.get(pos.dim);
+						dimCount.put(pos.dim, (dimCountInt!=null ? dimCountInt : 0)+1);
+					}
+				}
+				if (count>0) {
+					tooltip.add(I18n.format("visualink.tooltip.connected", count));
+					final EntityClientPlayerMP player = this.mc.thePlayer;
+					if (player!=null) {
+						final int playerDim = player.dimension;
+						for (final Entry<Integer, Integer> entrydim : dimCount.entrySet()) {
+							final int dim = entrydim.getKey();
+							final int countdim = entrydim.getValue();
+							if (playerDim==dim)
+								tooltip.add(I18n.format("visualink.tooltip.connected.dim.player", dim, countdim));
+							else
+								tooltip.add(I18n.format("visualink.tooltip.connected.dim", dim, countdim));
 						}
 					}
 				}
+			}
+	}
+
+	public void addItemTooltop(final ItemStack itemStack, final List<String> tooltip) {
+		if (toggleVisualink) {
+			final String itemId = getItemId(itemStack);
+			addTooltop(itemId, tooltip);
 		}
+	}
+
+	public void addBlockTooltop(final TileEntity tile, final List<String> tooltip) {
+		if (toggleVisualink) {
+			final String blockId = getBlockId(tile);
+			addTooltop(blockId, tooltip);
+		}
+	}
+
+	@SubscribeEvent
+	public void onTooltip(final @Nonnull ItemTooltipEvent event) {
+		addItemTooltop(event.itemStack, event.toolTip);
 	}
 
 	private void compileDL() {
@@ -185,56 +247,18 @@ public class ClientHandler {
 				final BlockPos pos = entry.getKey();
 				if (world.provider.dimensionId!=pos.dim)
 					continue;
-				final Block worldblock = world.getBlock(pos.x, pos.y, pos.z);
 				final Pair<Block, String> blockdata = entry.getValue();
 				final boolean chunkexists = world.getChunkFromBlockCoords(pos.x, pos.z).isChunkLoaded;
-				if (chunkexists)
-					b: {
-						for (final VisualinkBlocks visualinkblock : VisualinkBlocks.blocks) {
-							final Block candidateblock = visualinkblock.getBlock();
-							if (
-								candidateblock==worldblock
-							) {
-								final IBlockIdentifierProvider provider = visualinkblock.provider;
-								blockdata.setValue(provider==null ? visualinkblock.id : provider.provide(new IBlockAccessor() {
-									@Override
-									public TileEntity getTileEntity() {
-										if (candidateblock.hasTileEntity(world.getBlockMetadata(pos.x, pos.y, pos.z)))
-											return world.getTileEntity(pos.x, pos.y, pos.z);
-										return null;
-									}
-
-									@Override
-									public BlockPos getPosition() {
-										return pos;
-									}
-
-									@Override
-									public int getMetadata() {
-										return world.getBlockMetadata(pos.x, pos.y, pos.z);
-									}
-
-									@Override
-									public String getBlockID() {
-										return visualinkblock.id;
-									}
-
-									@Override
-									public Block getBlock() {
-										return candidateblock;
-									}
-								}));
-								if (blockdata.getValue()!=null) {
-									map.put(blockdata.getValue(), pos);
-									if (StringUtils.equals(handItemId, blockdata.getValue()))
-										renderBlock(pos, visualinkblock);
-								}
-								break b;
-							}
-						}
+				if (chunkexists) {
+					final String blockId = getBlockId(world.getTileEntity(pos.x, pos.y, pos.z));
+					blockdata.setValue(blockId);
+					if (blockId!=null) {
+						map.put(blockId, pos);
+						if (StringUtils.equals(handItemId, blockId))
+							renderBlock(pos);
+					} else
 						itr.remove();
-					}
-				else if (blockdata.getValue()!=null)
+				} else if (blockdata.getValue()!=null)
 					map.put(blockdata.getValue(), pos);
 			}
 			for (final Entry<String, Collection<BlockPos>> entry : map.asMap().entrySet()) {
@@ -287,7 +311,7 @@ public class ClientHandler {
 		GL11.glEndList();
 	}
 
-	private void renderBlock(final BlockPos pos, final VisualinkBlocks block) {
+	private void renderBlock(final BlockPos pos) {
 		final int x = pos.x;
 		final int y = pos.y;
 		final int z = pos.z;
@@ -388,5 +412,6 @@ public class ClientHandler {
 
 	public static void callbackRegister(final IWailaRegistrar registrar) {
 		EnderStorageModule.registerWaila(registrar);
+		JABBAModule.registerWaila(registrar);
 	}
 }

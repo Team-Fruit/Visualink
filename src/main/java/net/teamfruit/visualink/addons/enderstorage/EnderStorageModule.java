@@ -150,6 +150,8 @@ public class EnderStorageModule {
 	}
 
 	public static void registerWaila(final IWailaRegistrar registrar) {
+		registrar.addConfig("EnderStorage", "enderstorage.owner");
+		registrar.addConfig("EnderStorage", "enderstorage.connections");
 		final EnderStorageHUDHandler handler = new EnderStorageHUDHandler();
 		registrar.registerBodyProvider(handler, TileFrequencyOwner);
 		registrar.registerNBTProvider(handler, TileFrequencyOwner);

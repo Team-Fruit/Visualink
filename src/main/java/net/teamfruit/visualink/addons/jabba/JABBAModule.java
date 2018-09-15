@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
+import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -123,5 +124,12 @@ public class JABBAModule {
 		};
 		items.add(new VisualinkItems("JABBA:mover", provider));
 		items.add(new VisualinkItems("JABBA:moverDiamond", provider));
+	}
+
+	public static void registerWaila(final IWailaRegistrar registrar) {
+		registrar.addConfig("JABBA", "jabba.connections");
+		final JABBAHUDHandler handler = new JABBAHUDHandler();
+		registrar.registerBodyProvider(handler, TileEntityBarrel);
+		registrar.registerNBTProvider(handler, TileEntityBarrel);
 	}
 }
