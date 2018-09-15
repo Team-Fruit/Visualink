@@ -7,7 +7,7 @@ changelog.md
 !*.md
 !src/
 !gradle/
-!lib/
+!libs/
 !info/
 !build.gradle
 !common.gradle

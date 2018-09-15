@@ -278,11 +278,6 @@ repositories {
         name = 'CurseForge'
         url = 'https://minecraft.curseforge.com/api/maven/'
     }
-    ivy {
-        name 'ThaumCraft 4 API'
-        ivyPattern 'http://example.com/[module](.[ext])'
-        artifactPattern 'http://puu.sh/[module](.[ext])'
-    }
 }
 
 idea {
@@ -293,6 +288,7 @@ idea {
 }
 
 dependencies {
+	//compile 'mcp.mobius.waila:Waila:1.5.10_1.7.10'
     shade fileTree(dir: 'libs/shade', include: '*.jar')
 }
 

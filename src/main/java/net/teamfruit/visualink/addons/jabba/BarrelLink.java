@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler;
 import net.minecraft.nbt.NBTTagCompound;
 import net.teamfruit.visualink.Log;
 
@@ -75,10 +74,10 @@ public class BarrelLink {
 
 	public static BarrelLink getLinks() {
 		try {
-			final Field field = BSpaceStorageHandler.class.getDeclaredField("links");
+			final Field field = JABBAModuleServer.BSpaceStorageHandler.getDeclaredField("links");
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")
-			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(BSpaceStorageHandler.instance());
+			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(JABBAModuleServer.BSpaceStorageHandler_Instance.invoke(null));
 			return new BarrelLink(links);
 		} catch (final Exception e) {
 			Log.log.error("Failed to get barrel links: ", e);
