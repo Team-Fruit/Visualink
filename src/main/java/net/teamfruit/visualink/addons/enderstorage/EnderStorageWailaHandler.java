@@ -5,6 +5,7 @@ import java.util.List;
 import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
+import mcp.mobius.waila.api.IWailaRegistrar;
 import mcp.mobius.waila.utils.WailaExceptionHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -13,7 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.teamfruit.visualink.ClientHandler;
 
-public class EnderStorageHUDHandler implements IWailaDataProvider {
+public class EnderStorageWailaHandler implements IWailaDataProvider {
 	@Override
 	public ItemStack getWailaStack(final IWailaDataAccessor accessor, final IWailaConfigHandler config) {
 		return null;
@@ -49,5 +50,13 @@ public class EnderStorageHUDHandler implements IWailaDataProvider {
 		if (te!=null)
 			te.writeToNBT(tag);
 		return tag;
+	}
+
+	public static void register(final IWailaRegistrar registrar) {
+		registrar.addConfig("EnderStorage", "enderstorage.owner");
+		registrar.addConfig("EnderStorage", "enderstorage.connections");
+		final EnderStorageWailaHandler handler = new EnderStorageWailaHandler();
+		registrar.registerBodyProvider(handler, EnderStorageModule.TileFrequencyOwner);
+		registrar.registerNBTProvider(handler, EnderStorageModule.TileFrequencyOwner);
 	}
 }

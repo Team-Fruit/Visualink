@@ -1,6 +1,7 @@
 package net.teamfruit.visualink.addons.jabba;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;
 
@@ -10,7 +11,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Level;
 
-import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -23,6 +23,8 @@ import net.teamfruit.visualink.addons.IItemAccessor;
 import net.teamfruit.visualink.addons.IItemIdentifierProvider;
 
 public class JABBAModule {
+	public static Class<?> BSpaceStorageHandler = null;
+	public static Method BSpaceStorageHandler_Instance = null;
 	public static Class<?> TileEntityBarrel = null;
 	public static Field TileEntityBarrel_Id = null;
 
@@ -39,8 +41,27 @@ public class JABBAModule {
 		return false;
 	}
 
+	public static void register() {
+		if (!JABBAModule.installed)
+			return;
+
+		try {
+			BSpaceStorageHandler = Class.forName("mcp.mobius.betterbarrels.bspace.BSpaceStorageHandler");
+			BSpaceStorageHandler_Instance = BSpaceStorageHandler.getMethod("instance");
+		} catch (final ClassNotFoundException arg0) {
+			Log.log.log(Level.WARN, "[JABBA] Class not found. "+arg0);
+			return;
+		} catch (final NoSuchMethodException arg1) {
+			Log.log.log(Level.WARN, "[JABBA] Method not found."+arg1);
+			return;
+		} catch (final Exception arg3) {
+			Log.log.log(Level.WARN, "[JABBA] Unhandled exception."+arg3);
+			return;
+		}
+	}
+
 	public static void register(final List<VisualinkBlocks> blocks) {
-		if (!installed)
+		if (!JABBAModule.installed)
 			return;
 
 		try {
@@ -81,7 +102,7 @@ public class JABBAModule {
 	}
 
 	public static void registerItems(final List<VisualinkItems> items) {
-		if (!installed)
+		if (!JABBAModule.installed)
 			return;
 
 		final IItemIdentifierProvider provider = new IItemIdentifierProvider() {
@@ -117,11 +138,5 @@ public class JABBAModule {
 		};
 		items.add(new VisualinkItems("JABBA:mover", provider));
 		items.add(new VisualinkItems("JABBA:moverDiamond", provider));
-	}
-
-	public static void registerWaila(final IWailaRegistrar registrar) {
-		registrar.addConfig("JABBA", "jabba.connections");
-		final JABBAHUDHandler handler = new JABBAHUDHandler();
-		registrar.registerBodyProvider(handler, TileEntityBarrel);
 	}
 }

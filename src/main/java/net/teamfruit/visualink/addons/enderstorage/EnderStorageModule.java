@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.Level;
 
-import mcp.mobius.waila.api.IWailaRegistrar;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -29,7 +28,6 @@ public class EnderStorageModule {
 	public static Class<?> ItemEnderStorage = null;
 	public static Method ItemEnderStorage_GetFreq = null;
 	public static Method ItemEnderStorage_GetOwner = null;
-	public static Method ItemEnderStorage_GetMetadata = null;
 	public static Class<?> ItemEnderPouch = null;
 	public static Method ItemEnderPouch_GetOwner = null;
 
@@ -94,7 +92,6 @@ public class EnderStorageModule {
 			ItemEnderStorage = Class.forName("codechicken.enderstorage.common.ItemEnderStorage");
 			ItemEnderStorage_GetFreq = ItemEnderStorage.getMethod("getFreq", ItemStack.class);
 			ItemEnderStorage_GetOwner = ItemEnderStorage.getMethod("getOwner", ItemStack.class);
-			ItemEnderStorage_GetMetadata = ItemEnderStorage.getMethod("getMetadata", int.class);
 
 			ItemEnderPouch = Class.forName("codechicken.enderstorage.storage.item.ItemEnderPouch");
 			ItemEnderPouch_GetOwner = ItemEnderPouch.getMethod("getOwner", ItemStack.class);
@@ -120,7 +117,7 @@ public class EnderStorageModule {
 					if (ItemEnderStorage.isInstance(item)) {
 						final int freq = (Integer) ItemEnderStorage_GetFreq.invoke(item, itemstack);
 						final String owner = (String) ItemEnderStorage_GetOwner.invoke(item, itemstack);
-						final int metadata = (Integer) ItemEnderStorage_GetMetadata.invoke(item, itemstack.getItemDamage());
+						final int metadata = item.getMetadata(itemstack.getItemDamage());
 						final boolean isTank = metadata==1;
 						return accessor.getItemID()+"@"+(isTank ? "t" : "c")+freq+"@"+owner;
 					}
@@ -150,13 +147,5 @@ public class EnderStorageModule {
 				return null;
 			}
 		}));
-	}
-
-	public static void registerWaila(final IWailaRegistrar registrar) {
-		registrar.addConfig("EnderStorage", "enderstorage.owner");
-		registrar.addConfig("EnderStorage", "enderstorage.connections");
-		final EnderStorageHUDHandler handler = new EnderStorageHUDHandler();
-		registrar.registerBodyProvider(handler, TileFrequencyOwner);
-		registrar.registerNBTProvider(handler, TileFrequencyOwner);
 	}
 }

@@ -24,7 +24,7 @@ public class BarrelLink {
 
 	public void readFromNBT(final NBTTagCompound nbt) {
 		try {
-			final Field field = JABBAModuleServer.BSpaceStorageHandler.getDeclaredField("links");
+			final Field field = JABBAModule.BSpaceStorageHandler.getDeclaredField("links");
 			field.setAccessible(true);
 
 			if (nbt.hasKey("links")) {
@@ -42,9 +42,9 @@ public class BarrelLink {
 
 	public void writeToNBT(final NBTTagCompound nbt) {
 		try {
-			final Field field = JABBAModuleServer.BSpaceStorageHandler.getDeclaredField("links");
+			final Field field = JABBAModule.BSpaceStorageHandler.getDeclaredField("links");
 			field.setAccessible(true);
-			final Object instance = JABBAModuleServer.BSpaceStorageHandler_Instance.invoke(null);
+			final Object instance = JABBAModule.BSpaceStorageHandler_Instance.invoke(null);
 			@SuppressWarnings("unchecked")
 			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(instance);
 
@@ -74,10 +74,10 @@ public class BarrelLink {
 
 	public static BarrelLink getLinks() {
 		try {
-			final Field field = JABBAModuleServer.BSpaceStorageHandler.getDeclaredField("links");
+			final Field field = JABBAModule.BSpaceStorageHandler.getDeclaredField("links");
 			field.setAccessible(true);
 			@SuppressWarnings("unchecked")
-			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(JABBAModuleServer.BSpaceStorageHandler_Instance.invoke(null));
+			final HashMap<Integer, HashSet<Integer>> links = (HashMap<Integer, HashSet<Integer>>) field.get(JABBAModule.BSpaceStorageHandler_Instance.invoke(null));
 			return new BarrelLink(links);
 		} catch (final Exception e) {
 			Log.log.error("Failed to get barrel links: ", e);
