@@ -136,7 +136,7 @@ public class JABBAModule {
 				return null;
 			}
 		};
-		items.add(new VisualinkItems("JABBA:mover", provider));
-		items.add(new VisualinkItems("JABBA:moverDiamond", provider));
+		items.add(new VisualinkItems("JABBA:mover", provider, null));
+		items.add(new VisualinkItems("JABBA:moverDiamond", provider, null));
 	}
 }

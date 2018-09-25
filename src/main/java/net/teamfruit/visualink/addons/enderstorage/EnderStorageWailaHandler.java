@@ -33,10 +33,9 @@ public class EnderStorageWailaHandler implements IWailaDataProvider {
 				currenttip.add(String.format("Owner: %s", o));
 			} catch (final Exception arg8) {
 				currenttip = WailaExceptionHandler.handleErr(arg8, accessor.getTileEntity().getClass().getName(), currenttip);
-
 			}
 		if (config.getConfig("enderstorage.connections"))
-			ClientHandler.instance.addItemTooltop(itemStack, currenttip);
+			ClientHandler.instance.addItemTooltip(itemStack, currenttip);
 		return currenttip;
 	}
 

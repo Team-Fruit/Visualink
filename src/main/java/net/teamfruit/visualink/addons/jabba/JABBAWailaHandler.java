@@ -27,7 +27,7 @@ public class JABBAWailaHandler implements IWailaDataProvider {
 	@Override
 	public List<String> getWailaBody(final ItemStack itemStack, final List<String> currenttip, final IWailaDataAccessor accessor, final IWailaConfigHandler config) {
 		if (config.getConfig("jabba.connections"))
-			ClientHandler.instance.addBlockTooltop(accessor.getTileEntity(), currenttip);
+			ClientHandler.instance.addBlockTooltip(accessor.getTileEntity(), currenttip);
 		return currenttip;
 	}
 

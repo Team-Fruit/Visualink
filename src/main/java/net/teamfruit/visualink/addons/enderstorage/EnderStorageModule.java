@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import org.apache.logging.log4j.Level;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -19,6 +20,7 @@ import net.teamfruit.visualink.addons.IBlockAccessor;
 import net.teamfruit.visualink.addons.IBlockIdentifierProvider;
 import net.teamfruit.visualink.addons.IItemAccessor;
 import net.teamfruit.visualink.addons.IItemIdentifierProvider;
+import net.teamfruit.visualink.addons.IItemTooltipProvider;
 
 public class EnderStorageModule {
 	public static Class<?> TileFrequencyOwner = null;
@@ -30,6 +32,27 @@ public class EnderStorageModule {
 	public static Method ItemEnderStorage_GetOwner = null;
 	public static Class<?> ItemEnderPouch = null;
 	public static Method ItemEnderPouch_GetOwner = null;
+	public static Class<?> EnderStorageManager = null;
+	public static Method GetColourFromFreq = null;
+
+	public static final String[] colors = new String[] {
+			I18n.format("visualink.hud.msg.white"),
+			I18n.format("visualink.hud.msg.orange"),
+			I18n.format("visualink.hud.msg.magenta"),
+			I18n.format("visualink.hud.msg.lblue"),
+			I18n.format("visualink.hud.msg.yellow"),
+			I18n.format("visualink.hud.msg.lime"),
+			I18n.format("visualink.hud.msg.pink"),
+			I18n.format("visualink.hud.msg.gray"),
+			I18n.format("visualink.hud.msg.lgray"),
+			I18n.format("visualink.hud.msg.cyan"),
+			I18n.format("visualink.hud.msg.purple"),
+			I18n.format("visualink.hud.msg.blue"),
+			I18n.format("visualink.hud.msg.brown"),
+			I18n.format("visualink.hud.msg.green"),
+			I18n.format("visualink.hud.msg.red"),
+			I18n.format("visualink.hud.msg.black")
+	};
 
 	public static boolean installed = isInstalled();
 
@@ -95,6 +118,9 @@ public class EnderStorageModule {
 
 			ItemEnderPouch = Class.forName("codechicken.enderstorage.storage.item.ItemEnderPouch");
 			ItemEnderPouch_GetOwner = ItemEnderPouch.getMethod("getOwner", ItemStack.class);
+
+			EnderStorageManager = Class.forName("codechicken.enderstorage.api.EnderStorageManager");
+			GetColourFromFreq = EnderStorageManager.getDeclaredMethod("getColourFromFreq", int.class, int.class);
 		} catch (final ClassNotFoundException arg0) {
 			Log.log.log(Level.WARN, "[EnderStorage] Class not found. "+arg0);
 			return;
@@ -126,6 +152,31 @@ public class EnderStorageModule {
 				}
 				return null;
 			}
+		}, new IItemTooltipProvider() {
+			@Override
+			public void provide(final IItemAccessor accessor, final List<String> tooltip) {
+				try {
+					final ItemStack itemstack = accessor.getItemStack();
+					if (itemstack==null)
+						return;
+					final Item item = accessor.getItem();
+					if (ItemEnderStorage.isInstance(item)) {
+						final int freq = (Integer) ItemEnderStorage_GetFreq.invoke(item, itemstack);
+						final int freqLeft = ((Integer) EnderStorageModule.GetColourFromFreq.invoke(null, freq, 0)).intValue();
+						final int freqCenter = ((Integer) EnderStorageModule.GetColourFromFreq.invoke(null, freq, 1)).intValue();
+						final int freqRight = ((Integer) EnderStorageModule.GetColourFromFreq.invoke(null, freq, 2)).intValue();
+
+						final int metadata = item.getMetadata(itemstack.getItemDamage());
+						final boolean isTank = metadata==1;
+						if (!isTank)
+							tooltip.add(String.format("%s/%s/%s", new Object[] { colors[freqLeft], colors[freqCenter], colors[freqRight] }));
+						else
+							tooltip.add(String.format("%s/%s/%s", new Object[] { colors[freqRight], colors[freqCenter], colors[freqLeft] }));
+					}
+				} catch (final Exception arg8) {
+					Log.log.debug("[EnderStorage] Could not load ender storage color: ", arg8);
+				}
+			}
 		}));
 
 		items.add(new VisualinkItems("EnderStorage:enderPouch", new IItemIdentifierProvider() {
@@ -145,6 +196,26 @@ public class EnderStorageModule {
 					Log.log.error("[EnderStorage] Could not load ender pouch contents: ", arg8);
 				}
 				return null;
+			}
+		}, new IItemTooltipProvider() {
+			@Override
+			public void provide(final IItemAccessor accessor, final List<String> tooltip) {
+				try {
+					final ItemStack itemstack = accessor.getItemStack();
+					if (itemstack==null)
+						return;
+					final Item item = accessor.getItem();
+					if (ItemEnderPouch.isInstance(item)) {
+						final int freq = itemstack.getItemDamage();
+						final int freqLeft = ((Integer) EnderStorageModule.GetColourFromFreq.invoke(null, freq, 0)).intValue();
+						final int freqCenter = ((Integer) EnderStorageModule.GetColourFromFreq.invoke(null, freq, 1)).intValue();
+						final int freqRight = ((Integer) EnderStorageModule.GetColourFromFreq.invoke(null, freq, 2)).intValue();
+
+						tooltip.add(String.format("%s/%s/%s", new Object[] { colors[freqLeft], colors[freqCenter], colors[freqRight] }));
+					}
+				} catch (final Exception arg8) {
+					Log.log.debug("[EnderStorage] Could not load ender pouch color: ", arg8);
+				}
 			}
 		}));
 	}

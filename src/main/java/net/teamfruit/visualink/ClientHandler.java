@@ -50,6 +50,7 @@ import net.teamfruit.visualink.addons.IBlockAccessor;
 import net.teamfruit.visualink.addons.IBlockIdentifierProvider;
 import net.teamfruit.visualink.addons.IItemAccessor;
 import net.teamfruit.visualink.addons.IItemIdentifierProvider;
+import net.teamfruit.visualink.addons.IItemTooltipProvider;
 import net.teamfruit.visualink.addons.jabba.BarrelLink;
 
 public class ClientHandler {
@@ -125,6 +126,39 @@ public class ClientHandler {
 		return itemId;
 	}
 
+	public void getItemTooltip(final ItemStack itemStack, final List<String> tooltip) {
+		if (itemStack!=null) {
+			final Item item = itemStack.getItem();
+			for (final VisualinkItems visualinkitem : VisualinkItems.items) {
+				final Item itemi = visualinkitem.getItem();
+				if (
+					itemi==item
+				) {
+					final IItemTooltipProvider tooltipProvider = visualinkitem.tooltipProvider;
+					if (tooltipProvider!=null)
+						tooltipProvider.provide(new IItemAccessor() {
+							@Override
+							public ItemStack getItemStack() {
+								return itemStack;
+							}
+
+							@Override
+							public String getItemID() {
+								return visualinkitem.id;
+							}
+
+							@Override
+							public Item getItem() {
+								return item;
+							}
+						}, tooltip);
+
+					break;
+				}
+			}
+		}
+	}
+
 	public String getBlockId(final TileEntity tile) {
 		String blockId = null;
 		if (tile!=null)
@@ -173,7 +207,7 @@ public class ClientHandler {
 		return blockId;
 	}
 
-	public void addTooltop(final String id, final List<String> tooltip) {
+	public void addTooltip(final String id, final List<String> tooltip) {
 		if (toggleVisualink)
 			if (id!=null) {
 				int count = 0;
@@ -205,23 +239,24 @@ public class ClientHandler {
 			}
 	}
 
-	public void addItemTooltop(final ItemStack itemStack, final List<String> tooltip) {
+	public void addItemTooltip(final ItemStack itemStack, final List<String> tooltip) {
+		getItemTooltip(itemStack, tooltip);
 		if (toggleVisualink) {
 			final String itemId = getItemId(itemStack);
-			addTooltop(itemId, tooltip);
+			addTooltip(itemId, tooltip);
 		}
 	}
 
-	public void addBlockTooltop(final TileEntity tile, final List<String> tooltip) {
+	public void addBlockTooltip(final TileEntity tile, final List<String> tooltip) {
 		if (toggleVisualink) {
 			final String blockId = getBlockId(tile);
-			addTooltop(blockId, tooltip);
+			addTooltip(blockId, tooltip);
 		}
 	}
 
 	@SubscribeEvent
 	public void onTooltip(final @Nonnull ItemTooltipEvent event) {
-		addItemTooltop(event.itemStack, event.toolTip);
+		getItemTooltip(event.itemStack, event.toolTip);
 	}
 
 	private static class NodeConnectionInfo {
